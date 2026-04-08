@@ -1,5 +1,6 @@
 package com.example.newapp.ui.theme
 
+import android.os.Build
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -8,18 +9,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.newapp.R
 
-private val AuraDisplayFamily = FontFamily(
-    Font(R.font.lora_variable, weight = FontWeight.Medium),
-    Font(R.font.lora_variable, weight = FontWeight.SemiBold),
-    Font(R.font.lora_variable, weight = FontWeight.Bold)
-)
+private val AuraDisplayFamily = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    FontFamily(
+        Font(R.font.lora_variable, weight = FontWeight.Medium),
+        Font(R.font.lora_variable, weight = FontWeight.SemiBold),
+        Font(R.font.lora_variable, weight = FontWeight.Bold)
+    )
+} else {
+    FontFamily.Serif
+}
 
-private val AuraBodyFamily = FontFamily(
-    Font(R.font.manrope_variable, weight = FontWeight.Normal),
-    Font(R.font.manrope_variable, weight = FontWeight.Medium),
-    Font(R.font.manrope_variable, weight = FontWeight.SemiBold),
-    Font(R.font.manrope_variable, weight = FontWeight.Bold)
-)
+private val AuraBodyFamily = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    FontFamily(
+        Font(R.font.manrope_variable, weight = FontWeight.Normal),
+        Font(R.font.manrope_variable, weight = FontWeight.Medium),
+        Font(R.font.manrope_variable, weight = FontWeight.SemiBold),
+        Font(R.font.manrope_variable, weight = FontWeight.Bold)
+    )
+} else {
+    FontFamily.SansSerif
+}
 
 val Typography = Typography(
     displayLarge = TextStyle(

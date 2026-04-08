@@ -94,6 +94,11 @@ fun MenuScreen(
     onOpenAtlas: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (uiState.isLoading) {
+        LoadingMenuState(modifier = modifier)
+        return
+    }
+
     val settings = uiState.quizSettings
     val compact = settings.compactUi
     var showSettingsSheet by remember { mutableStateOf(false) }
@@ -540,6 +545,45 @@ fun MenuScreen(
                 onCloudGenerationEnabled = onCloudGenerationEnabled,
                 onComplete = onCompleteOnboarding
             )
+        }
+    }
+}
+
+@Composable
+private fun LoadingMenuState(
+    modifier: Modifier = Modifier
+) {
+    Scaffold(
+        modifier = modifier.testTag(AuraNodeTestTags.MENU_SCREEN),
+        containerColor = Color.Transparent
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .padding(horizontal = 20.dp, vertical = 24.dp)
+        ) {
+            AuraNodeSurfaceCard(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.menu_title),
+                        style = MaterialTheme.typography.displaySmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = stringResource(R.string.startup_loading_message),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
 }

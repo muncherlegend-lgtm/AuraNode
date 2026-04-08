@@ -102,7 +102,7 @@ data class QuizUiState(
         get() = selectedPack?.type != QuizPackType.CUSTOM_IMPORTED
 
     val shouldShowOnboarding: Boolean
-        get() = !quizSettings.hasCompletedOnboarding
+        get() = !isLoading && !quizSettings.hasCompletedOnboarding
 
     val cloudGenerationReady: Boolean
         get() = aiGenerationConfig.cloudGenerationEnabled && aiGenerationConfig.apiKey.isNotBlank()

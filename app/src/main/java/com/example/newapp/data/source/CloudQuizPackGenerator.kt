@@ -225,6 +225,6 @@ class CloudQuizPackGenerator @Inject constructor() {
 
     private companion object {
         const val MAX_PROMPT_TEXT = 12_000
-        val FENCED_JSON_REGEX = Regex("```(?:json)?\\s*(\\{.*})\\s*```", RegexOption.DOT_MATCHES_ALL)
+        val FENCED_JSON_REGEX = Regex("```(?:json)?\\s*(\\{.*\\})\\s*```", RegexOption.DOT_MATCHES_ALL)
     }
 }
