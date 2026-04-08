@@ -1,0 +1,19 @@
+<resources>
+    <string name="menu_jury_mode_enabled">Jury-safe preset</string>
+    <string name="menu_setting_jury_mode">Jury mode</string>
+    <string name="menu_setting_demo_reset_on_launch">Auto reset on launch</string>
+    <string name="menu_reset_progress">Demo/Jury reset</string>
+
+    <string name="atlas_chip_title">Altai Atlas</string>
+    <string name="atlas_title">Центр экспедиции</string>
+    <string name="atlas_body">Открывайте точки Алтайского края, собирайте факты, медали и лучшие забеги в одном офлайн-хабе.</string>
+    <string name="atlas_back_to_menu">В меню</string>
+    <string name="atlas_achievements_title">Достижения экспедиции</string>
+    <string name="atlas_hall_of_fame_title">Зал достижений</string>
+
+    <string name="share_card_title">AuraNode Expedition</string>
+    <string name="share_card_accuracy_format">Точность %1$d%% · %2$s</string>
+    <string name="share_card_streak_format">Точность %1$d%% · серия %2$d</string>
+    <string name="share_card_theme_format">Тема: %1$s</string>
+    <string name="share_card_chooser_title">Поделиться результатом</string>
+</resources>

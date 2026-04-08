@@ -1,0 +1,52 @@
+{
+  "achievements": [
+    {
+      "id": "perfect_run",
+      "title": "Безупречный маршрут",
+      "description": "Пройти любой уровень без ошибок.",
+      "iconName": "military_tech",
+      "ruleType": "PERFECT_RUN",
+      "threshold": 1
+    },
+    {
+      "id": "no_timeouts",
+      "title": "Ритм экспедиции",
+      "description": "Завершить забег без единого таймаута.",
+      "iconName": "timer",
+      "ruleType": "NO_TIMEOUTS",
+      "threshold": 1
+    },
+    {
+      "id": "streak_5",
+      "title": "Серия исследователя",
+      "description": "Собрать серию из 5 правильных ответов подряд.",
+      "iconName": "whatshot",
+      "ruleType": "STREAK",
+      "threshold": 5
+    },
+    {
+      "id": "atlas_master",
+      "title": "Хранитель Атласа",
+      "description": "Открыть все ключевые точки Алтайского атласа.",
+      "iconName": "public",
+      "ruleType": "ATLAS_NODES",
+      "threshold": 8
+    },
+    {
+      "id": "theme_nomad",
+      "title": "Коллекционер тем",
+      "description": "Попробовать все темы оформления.",
+      "iconName": "palette",
+      "ruleType": "ALL_THEMES_TRIED",
+      "threshold": 5
+    },
+    {
+      "id": "legend_clear",
+      "title": "Легенда Алтая",
+      "description": "Успешно завершить режим Legend.",
+      "iconName": "auto_awesome",
+      "ruleType": "LEGEND_CLEAR",
+      "threshold": 1
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "nodes": [
+    {
+      "id": "barnaul",
+      "title": "Барнаул",
+      "subtitle": "Столица края",
+      "description": "Город сереброплавильного завода и административное сердце современного Алтая.",
+      "highlightFact": "Барнаул остаётся административным центром Алтайского края с 1937 года.",
+      "rewardTitle": "Открыт исторический центр",
+      "factCategory": "HISTORY",
+      "xFraction": 0.18,
+      "yFraction": 0.68,
+      "connections": ["biysk", "belokurikha", "kulunda"]
+    },
+    {
+      "id": "biysk",
+      "title": "Бийск",
+      "subtitle": "Наукоград",
+      "description": "Один из главных научно-промышленных центров Алтая и ворота на Чуйский тракт.",
+      "highlightFact": "Бийск имеет статус наукограда Российской Федерации.",
+      "rewardTitle": "Открыт научный маршрут",
+      "factCategory": "SCIENCE",
+      "xFraction": 0.34,
+      "yFraction": 0.62,
+      "connections": ["barnaul", "chuysky_tract", "denisova_cave"]
+    },
+    {
+      "id": "belokurikha",
+      "title": "Белокуриха",
+      "subtitle": "Курорт",
+      "description": "Термальный курорт с мягким предгорным климатом и санаторной славой.",
+      "highlightFact": "Белокуриха известна природными термальными источниками.",
+      "rewardTitle": "Открыт курортный кластер",
+      "factCategory": "TRAVEL",
+      "xFraction": 0.44,
+      "yFraction": 0.72,
+      "connections": ["barnaul", "biysk"]
+    },
+    {
+      "id": "denisova_cave",
+      "title": "Денисова пещера",
+      "subtitle": "Археология",
+      "description": "Одна из самых известных археологических точек мира на территории Алтая.",
+      "highlightFact": "Именно здесь были сделаны открытия, изменившие представление об эволюции человека.",
+      "rewardTitle": "Открыт древний слой",
+      "factCategory": "SCIENCE",
+      "xFraction": 0.62,
+      "yFraction": 0.46,
+      "connections": ["biysk", "tigirek"]
+    },
+    {
+      "id": "tigirek",
+      "title": "Тигирекский заповедник",
+      "subtitle": "Западный Алтай",
+      "description": "Охраняемые горные экосистемы юго-запада края и редкие виды животных.",
+      "highlightFact": "Заповедник хранит природные комплексы Западного Алтая.",
+      "rewardTitle": "Открыта заповедная зона",
+      "factCategory": "NATURE",
+      "xFraction": 0.72,
+      "yFraction": 0.30,
+      "connections": ["denisova_cave", "kolyvan"]
+    },
+    {
+      "id": "chuysky_tract",
+      "title": "Чуйский тракт",
+      "subtitle": "Путь экспедиции",
+      "description": "Легендарная трасса Р-256, связывающая равнину, предгорья и южные маршруты Алтая.",
+      "highlightFact": "Чуйский тракт входит в число самых известных дорог России.",
+      "rewardTitle": "Открыта главная магистраль",
+      "factCategory": "TRAVEL",
+      "xFraction": 0.56,
+      "yFraction": 0.58,
+      "connections": ["biysk", "kulunda"]
+    },
+    {
+      "id": "kulunda",
+      "title": "Кулундинская степь",
+      "subtitle": "Степной запад",
+      "description": "Просторная степная территория с солёными озёрами и аграрной мощью.",
+      "highlightFact": "Кулундинская степь формирует особый природный образ западной части края.",
+      "rewardTitle": "Открыт степной горизонт",
+      "factCategory": "NATURE",
+      "xFraction": 0.20,
+      "yFraction": 0.30,
+      "connections": ["barnaul", "chuysky_tract"]
+    },
+    {
+      "id": "kolyvan",
+      "title": "Колывань",
+      "subtitle": "Камнерезная школа",
+      "description": "Историческое село, связанное с камнерезным искусством и яшмовыми шедеврами.",
+      "highlightFact": "Колыванская фабрика прославилась «Царицей ваз» в Эрмитаже.",
+      "rewardTitle": "Открыта камнерезная легенда",
+      "factCategory": "CULTURE",
+      "xFraction": 0.84,
+      "yFraction": 0.22,
+      "connections": ["tigirek"]
+    }
+  ]
+}

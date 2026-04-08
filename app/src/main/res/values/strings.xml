@@ -1,0 +1,263 @@
+<resources>
+    <string name="app_name">AuraNode</string>
+
+    <string name="menu_location_label">Алтайский край · Барнаул</string>
+    <string name="menu_title">AuraNode</string>
+    <string name="menu_subtitle">Премиальная викторина-путешествие по Алтаю: факты, маршруты и редкие детали региона в трёх уровнях сложности.</string>
+    <string name="menu_promise_title">Маршрут начинается здесь</string>
+    <string name="menu_promise_body">Выберите уровень и пройдите короткую, но атмосферную экспедицию: 15 вопросов, мягкий темп и факты, которые раскрываются по ходу игры.</string>
+    <string name="menu_stat_questions">15 вопросов</string>
+    <string name="menu_stat_levels">3 уровня</string>
+    <string name="menu_stat_timer">20 секунд</string>
+    <string name="menu_stat_facts">Факты об Алтае</string>
+    <string name="menu_levels_title">Выберите маршрут</string>
+    <string name="menu_levels_body">Каждый уровень оформлен как отдельная экспедиция: от базовых ориентиров до редких деталей, которые знают не все местные.</string>
+    <string name="menu_hint">Подсказка: правильный ответ открывает короткий факт о регионе, так что каждая попытка делает маршрут богаче.</string>
+
+    <string name="difficulty_cadet_title">Кадет</string>
+    <string name="difficulty_cadet_subtitle">Лёгкий старт с базовыми ориентирами по Алтаю, Барнаулу и главным символам края.</string>
+    <string name="difficulty_cadet_badge">Базовый темп</string>
+    <string name="difficulty_engineer_title">Инженер</string>
+    <string name="difficulty_engineer_subtitle">Больше истории, географии и научных фактов для уверенного прохождения маршрута.</string>
+    <string name="difficulty_engineer_badge">Средняя глубина</string>
+    <string name="difficulty_cosmonaut_title">Космонавт</string>
+    <string name="difficulty_cosmonaut_subtitle">Редкие детали, природные особенности и культурные точки для тех, кто любит сложнее.</string>
+    <string name="difficulty_cosmonaut_badge">Максимальный вызов</string>
+
+    <string name="quiz_title_fallback">Викторина</string>
+    <string name="quiz_topbar_route">Маршрут по Алтаю</string>
+    <string name="quiz_topbar_question">Вопрос %1$d</string>
+    <string name="quiz_topbar_counter">%1$d из %2$d</string>
+    <string name="quiz_progress_label">Прогресс</string>
+    <string name="quiz_timer_label">Таймер</string>
+    <string name="quiz_timer_value">%1$d сек</string>
+    <string name="quiz_score_label">Очки</string>
+    <string name="quiz_score_value">%1$s · %2$d</string>
+    <string name="quiz_level_label">Уровень</string>
+    <string name="quiz_fact_title">Факт маршрута</string>
+    <string name="quiz_empty_loading">Подводим итоги маршрута…</string>
+    <string name="quiz_empty_missing">Вопросы ещё не загружены.</string>
+    <string name="quiz_feedback_correct_title">Отличный ответ</string>
+    <string name="quiz_feedback_incorrect_title">Верный маршрут рядом</string>
+    <string name="quiz_feedback_timeout_title">Темп сбился</string>
+    <string name="quiz_feedback_correct_body">%1$s</string>
+    <string name="quiz_feedback_incorrect_body">Верный ответ: %1$s. %2$s</string>
+    <string name="quiz_feedback_timeout_body">Время вышло. Верный ответ: %1$s. %2$s</string>
+    <string name="quiz_answer_state_correct">Верный выбор</string>
+    <string name="quiz_answer_state_incorrect">Неверный выбор</string>
+    <string name="quiz_back_to_menu">В главное меню</string>
+
+    <string name="result_empty_title">Результаты пока пусты.</string>
+    <string name="result_title_perfect">Идеальный маршрут по Алтаю</string>
+    <string name="result_title_strong">Сильный результат</string>
+    <string name="result_title_start">Хорошее начало</string>
+    <string name="result_body_perfect">Вы прошли уровень без единой ошибки и собрали максимум очков. Это уже не просто викторина, а уверенная навигация по региону.</string>
+    <string name="result_body_strong">Маршрут пройден уверенно. Ещё немного, и результат станет безупречным даже на самых сложных вопросах.</string>
+    <string name="result_body_start">База уже заложена. Следующая попытка пройдёт увереннее, а маршрут раскроется ещё полнее.</string>
+    <string name="result_score_format">%1$d / %2$d</string>
+    <string name="result_accuracy_format">%1$d%%</string>
+    <string name="result_correct_format">%1$d из %2$d</string>
+    <string name="result_metric_score">Очки</string>
+    <string name="result_metric_accuracy">Точность</string>
+    <string name="result_metric_correct">Верных ответов</string>
+    <string name="result_metric_level">Уровень</string>
+    <string name="result_summary_label">Финал маршрута</string>
+    <string name="result_retry">Пройти ещё раз</string>
+    <string name="result_back_to_menu">В главное меню</string>
+
+    <string name="common_back_to_menu">В главное меню</string>
+
+    <string name="question_1_text">Какой город является административным центром Алтайского края?</string>
+    <string name="question_1_explanation">Барнаул вырос вокруг сереброплавильного завода и с 1937 года остаётся административным центром края.</string>
+    <string-array name="question_1_options">
+        <item>Бийск</item>
+        <item>Барнаул</item>
+        <item>Рубцовск</item>
+        <item>Белокуриха</item>
+    </string-array>
+
+    <string name="question_2_text">Какой город Алтайского края особенно известен как курорт с термальными источниками?</string>
+    <string name="question_2_explanation">Белокуриха славится термальными источниками, мягким предгорным климатом и санаторным лечением.</string>
+    <string-array name="question_2_options">
+        <item>Новоалтайск</item>
+        <item>Яровое</item>
+        <item>Белокуриха</item>
+        <item>Заринск</item>
+    </string-array>
+
+    <string name="question_3_text">Какая крупная река протекает через Барнаул?</string>
+    <string name="question_3_explanation">Барнаул расположен на левом берегу Оби, а в черте города в неё впадает река Барнаулка.</string>
+    <string-array name="question_3_options">
+        <item>Обь</item>
+        <item>Енисей</item>
+        <item>Томь</item>
+        <item>Иртыш</item>
+    </string-array>
+
+    <string name="question_4_text">Какой профиль хозяйства особенно силён в Алтайском крае?</string>
+    <string name="question_4_explanation">Алтайский край считается одним из крупнейших аграрных регионов страны и известен зерном, масличными и переработкой продукции.</string>
+    <string-array name="question_4_options">
+        <item>Нефтедобыча</item>
+        <item>Сельское хозяйство</item>
+        <item>Судостроение</item>
+        <item>Алмазодобыча</item>
+    </string-array>
+
+    <string name="question_5_text">В какой федеральный округ входит Алтайский край?</string>
+    <string name="question_5_explanation">Алтайский край входит в Сибирский федеральный округ и находится в юго-восточной части Западной Сибири.</string>
+    <string-array name="question_5_options">
+        <item>Дальневосточный</item>
+        <item>Приволжский</item>
+        <item>Сибирский</item>
+        <item>Уральский</item>
+    </string-array>
+
+    <string name="question_6_text">В каком году был образован Алтайский край?</string>
+    <string name="question_6_explanation">Алтайский край был образован 28 сентября 1937 года и объединил равнинные и предгорные территории региона.</string>
+    <string-array name="question_6_options">
+        <item>1925</item>
+        <item>1937</item>
+        <item>1943</item>
+        <item>1956</item>
+    </string-array>
+
+    <string name="question_7_text">С чьим именем связано становление Барнаула как крупного горнозаводского центра?</string>
+    <string name="question_7_explanation">Именно заводы Акинфия Демидова дали толчок развитию Барнаула как важного центра горного дела и металлургии.</string>
+    <string-array name="question_7_options">
+        <item>Петра I</item>
+        <item>Акинфия Демидова</item>
+        <item>Петра Столыпина</item>
+        <item>Ивана Кулибина</item>
+    </string-array>
+
+    <string name="question_8_text">Какой город Алтайского края имеет статус наукограда Российской Федерации?</string>
+    <string name="question_8_explanation">Бийск получил статус наукограда в 2005 году и остаётся значимым научно-промышленным центром Алтая.</string>
+    <string-array name="question_8_options">
+        <item>Бийск</item>
+        <item>Новоалтайск</item>
+        <item>Камень-на-Оби</item>
+        <item>Заринск</item>
+    </string-array>
+
+    <string name="question_9_text">Как называются уникальные сосновые леса, которыми знаменит равнинный Алтай?</string>
+    <string name="question_9_explanation">Ленточные боры Алтая считаются редкой природной системой, сформированной ещё в эпоху древних ледников.</string>
+    <string-array name="question_9_options">
+        <item>Черневые леса</item>
+        <item>Ленточные боры</item>
+        <item>Берёзовые гривы</item>
+        <item>Салаирская тайга</item>
+    </string-array>
+
+    <string name="question_10_text">В каком районе Алтайского края находится Денисова пещера?</string>
+    <string name="question_10_explanation">Денисова пещера в Солонешенском районе сделала Алтай всемирно известным благодаря археологическим открытиям.</string>
+    <string-array name="question_10_options">
+        <item>Змеиногорском</item>
+        <item>Солонешенском</item>
+        <item>Тальменском</item>
+        <item>Шипуновском</item>
+    </string-array>
+
+    <string name="question_11_text">Какой заповедник охраняет горные экосистемы юго-запада Алтайского края?</string>
+    <string name="question_11_explanation">Тигирекский заповедник создан для сохранения природных комплексов Западного Алтая и редких видов животных.</string>
+    <string-array name="question_11_options">
+        <item>Катунский</item>
+        <item>Тигирекский</item>
+        <item>Алтайский</item>
+        <item>Саяно-Шушенский</item>
+    </string-array>
+
+    <string name="question_12_text">Как называется федеральная трасса Р-256, проходящая через Барнаул и Бийск?</string>
+    <string name="question_12_explanation">Чуйский тракт проходит через Алтайский край и считается одной из самых известных и живописных дорог России.</string>
+    <string-array name="question_12_options">
+        <item>Колымский тракт</item>
+        <item>Чуйский тракт</item>
+        <item>Сибирский меридиан</item>
+        <item>Алтайское кольцо</item>
+    </string-array>
+
+    <string name="question_13_text">Как называется обширная степная территория на западе Алтайского края?</string>
+    <string name="question_13_explanation">Кулундинская степь известна солёными озёрами, широкими сельхозугодьями и контрастным резко континентальным климатом.</string>
+    <string-array name="question_13_options">
+        <item>Кулундинская степь</item>
+        <item>Уймонская котловина</item>
+        <item>Чулышманская долина</item>
+        <item>Салаирское плато</item>
+    </string-array>
+
+    <string name="question_14_text">Какое озеро Алтайского края известно высокой минерализацией воды и лечебными илами?</string>
+    <string name="question_14_explanation">Озеро Большое Яровое в степной части края известно солёной водой и лечебными грязями, привлекающими туристов.</string>
+    <string-array name="question_14_options">
+        <item>Телецкое</item>
+        <item>Ая</item>
+        <item>Большое Яровое</item>
+        <item>Манжерокское</item>
+    </string-array>
+
+    <string name="question_15_text">В каком селе работает знаменитая Колыванская камнерезная фабрика?</string>
+    <string name="question_15_explanation">Колыванская фабрика прославилась изделиями из яшмы, включая знаменитую «Царицу ваз», которая хранится в Эрмитаже.</string>
+    <string-array name="question_15_options">
+        <item>Сростки</item>
+        <item>Колывань</item>
+        <item>Кытманово</item>
+        <item>Шульгин Лог</item>
+    </string-array>
+    <string name="menu_stat_questions_dynamic">%1$d вопросов</string>
+    <string name="menu_stat_timer_dynamic">%1$d сек</string>
+    <string name="menu_stat_timer_off">Без таймера</string>
+    <string name="menu_stat_themes_dynamic">%1$d тем</string>
+    <string name="menu_stat_mode_dual">Кнопки + текст</string>
+    <string name="menu_stat_mode_text_only">Только текст</string>
+    <string name="menu_stat_mode_option_only">Только варианты</string>
+    <string name="menu_themes_title">Темы оформления</string>
+    <string name="menu_themes_body">Выберите цветовую гамму и характер фона: волны, хребты или ночное небо.</string>
+    <string name="menu_settings_title">Настройки опроса</string>
+    <string name="menu_settings_body">Параметры подхватываются из конфигов, но их можно быстро подстроить перед стартом.</string>
+    <string name="menu_setting_timer">Таймер</string>
+    <string name="menu_setting_text_answer">Свободный ответ</string>
+    <string name="menu_setting_compact">Компактный UI</string>
+    <string name="menu_setting_shuffle">Перемешивать</string>
+    <string name="menu_config_files_hint">Файлы конфигурации: `assets/config/questions.json`, `quiz_settings.json`, `themes.json`.</string>
+    <string name="quiz_answer_input_label">Свободный ответ</string>
+    <string name="quiz_answer_input_placeholder">Введите свой вариант ответа</string>
+    <string name="quiz_answer_input_submit">Проверить ответ</string>
+    <string name="quiz_answer_input_hint_dual">Можно ответить текстом или выбрать один из вариантов ниже.</string>
+    <string name="quiz_answer_input_hint_text_only">Ответ принимается в свободной форме. Можно писать название, год или краткий вариант.</string>
+    <string name="quiz_feedback_incorrect_with_input_body">Ваш ответ: %1$s. Верный вариант: %2$s. %3$s</string>
+    <string name="theme_preset_active">Активна</string>
+    <string name="mode_classic_title">Классика</string>
+    <string name="mode_classic_body">Строгий конкурсный режим: 4 варианта ответа, чистый прогресс и понятный итог.</string>
+    <string name="mode_sprint_title">Sprint</string>
+    <string name="mode_sprint_body">Быстрый темп, тайм-бонус и серия верных ответов для максимального результата.</string>
+    <string name="mode_legend_title">Legend</string>
+    <string name="mode_legend_body">Финальный режим для сильного прохождения: легендарные вопросы и высокий коэффициент очков.</string>
+    <string name="mode_legend_locked_body">Откроется после сильного результата хотя бы на одном маршруте.</string>
+    <string name="mode_active_label">Активный режим</string>
+    <string name="menu_open_atlas">Открыть атлас</string>
+    <string name="menu_open_settings">Настройки</string>
+    <string name="menu_stat_atlas_dynamic">Атлас: %1$d из %2$d</string>
+    <string name="menu_stat_achievements_dynamic">Наград: %1$d</string>
+    <string name="menu_modes_title">Режим экспедиции</string>
+    <string name="menu_modes_body">По умолчанию жюри увидит классический формат, а бонусные режимы добавляют глубину и вау-эффект.</string>
+    <string name="menu_atlas_preview_title">Altai Atlas</string>
+    <string name="menu_atlas_preview_body">Открыто %1$d из %2$d узлов карты. Каждый правильный ответ расширяет маршрут и коллекцию фактов.</string>
+    <string name="menu_setting_motion">Анимации</string>
+    <string name="menu_setting_haptics">Вибро-отклик</string>
+    <string name="menu_setting_sound">Звуковой отклик</string>
+    <string name="menu_setting_answer_mode">Режим ответа</string>
+    <string name="answer_mode_classic">Классика</string>
+    <string name="answer_mode_mixed">Explorer Mixed</string>
+    <string name="answer_mode_text">Explorer Text</string>
+    <string name="quiz_mode_chip">Режим: %1$s</string>
+    <string name="quiz_streak_and_bonus">Серия %1$d • бонус %2$d</string>
+    <string name="quiz_feedback_correct_reward_body">%1$s. %2$s</string>
+    <string name="quiz_feedback_fallback_reward">Открыта новая точка маршрута</string>
+    <string name="result_debrief_title">Дебрифинг экспедиции</string>
+    <string name="result_debrief_body">Маршрут завершён. В атласе уже открыто %1$d точек, а лучшие забеги сохраняются локально.</string>
+    <string name="result_metric_streak">Лучшая серия</string>
+    <string name="result_metric_time_bonus">Тайм-бонус</string>
+    <string name="result_share_fallback_fact">Экспедиция по Алтайскому краю открыла новые маршруты и факты.</string>
+    <string name="result_unlocked_nodes_title">Открытые точки атласа</string>
+    <string name="result_achievements_title">Достижения</string>
+    <string name="result_share">Поделиться результатом</string>
+    <string name="result_open_atlas">Открыть атлас</string>
+</resources>

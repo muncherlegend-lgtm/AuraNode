@@ -1,0 +1,19 @@
+{
+  "timerSeconds": 18,
+  "autoAdvanceDelayMs": 1700,
+  "showTimer": true,
+  "allowOptionSelection": true,
+  "allowFreeTextAnswers": false,
+  "compactUi": true,
+  "motionEnabled": true,
+  "hapticsEnabled": true,
+  "soundEnabled": false,
+  "juryModeEnabled": true,
+  "demoResetOnLaunch": false,
+  "shuffleQuestions": false,
+  "shuffleOptions": false,
+  "questionsPerDifficulty": 5,
+  "defaultThemeId": "katun_dawn",
+  "defaultMode": "CLASSIC",
+  "answerMode": "CLASSIC_OPTIONS"
+}

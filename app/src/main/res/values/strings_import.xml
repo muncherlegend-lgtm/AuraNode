@@ -1,0 +1,46 @@
+<resources>
+    <string name="menu_import_material">Импортировать материал</string>
+    <string name="menu_custom_mode_label">Custom Quiz Packs</string>
+    <string name="menu_custom_subtitle">Загрузите свой файл и превратите его в викторину с тремя уровнями сложности.</string>
+    <string name="menu_packs_title">Библиотека наборов</string>
+    <string name="menu_packs_body">Официальный алтайский сценарий остаётся конкурсным дефолтом, а ваши материалы живут рядом как полноценные кастомные наборы.</string>
+    <string name="menu_custom_pack_title">Кастомный набор</string>
+    <string name="menu_custom_pack_body">Для импортированных pack’ов доступен классический режим с 4 вариантами ответа и общим result flow.</string>
+    <string name="menu_levels_title_for_pack">Маршрут: %1$s</string>
+    <string name="menu_stat_packs_dynamic">Паков: %1$d</string>
+    <string name="menu_home_preference_title">Главный сценарий</string>
+    <string name="menu_ai_settings_title">AI генерация</string>
+    <string name="menu_ai_cloud_toggle">Пробовать cloud AI перед fallback</string>
+    <string name="menu_ai_api_key">API key</string>
+    <string name="menu_ai_gemini_model">Gemini model</string>
+    <string name="menu_ai_openrouter_model">OpenRouter model</string>
+
+    <string name="home_preference_official">Altai first</string>
+    <string name="home_preference_custom">My packs first</string>
+    <string name="home_preference_balanced">Balanced</string>
+
+    <string name="ai_provider_gemini">Gemini API</string>
+    <string name="ai_provider_openrouter">OpenRouter</string>
+    <string name="ai_consent_title">Отправить текст во внешний AI?</string>
+    <string name="ai_consent_body">При cloud-генерации извлечённый текст файла будет отправлен выбранному AI-провайдеру. Без согласия можно использовать локальный офлайн-черновик.</string>
+    <string name="ai_consent_confirm">Согласен</string>
+    <string name="ai_consent_cancel">Пока нет</string>
+
+    <string name="import_preview_title">Предпросмотр материала</string>
+    <string name="import_preview_meta">Формат: %1$s · до %2$d вопросов в черновике</string>
+    <string name="import_generate_cloud">Сгенерировать с AI</string>
+    <string name="import_generate_offline">Использовать offline draft</string>
+    <string name="import_status_title">Статус генерации</string>
+
+    <string name="onboarding_title">Настрой старт AuraNode</string>
+    <string name="onboarding_body">Выбери основной домашний сценарий, режим ответа и поведение AI. Официальная алтайская экспедиция уже предвыбрана как безопасный конкурсный старт.</string>
+    <string name="onboarding_ai_toggle">Включить cloud AI как бонус</string>
+    <string name="onboarding_continue">Продолжить</string>
+
+    <string name="result_custom_debrief_body">Кастомный pack завершён. Источник: %1$s.</string>
+    <string name="result_custom_share_fact">Квиз был создан из файла: %1$s.</string>
+    <string name="result_custom_pack_title">Источник кастомного набора</string>
+    <string name="result_custom_pack_body">Этот результат получен на наборе, созданном из файла %1$s.</string>
+
+    <string name="common_dismiss">Скрыть</string>
+</resources>
