@@ -1,6 +1,7 @@
 package com.example.newapp.ui.quiz
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newapp.data.model.AiGenerationConfig
@@ -464,16 +465,45 @@ class QuizViewModel @Inject constructor(
     }
 
     private suspend fun loadConfiguration() {
-        val settings = quizRepository.getQuizSettings().sanitize()
-        if (settings.demoResetOnLaunch) {
-            quizRepository.resetProgress()
+        var recoveredFromStartupIssue = false
+        val defaultSettings = quizRepository.getQuizConfig().sanitize()
+
+        suspend fun <T> recover(
+            label: String,
+            fallback: T,
+            block: suspend () -> T
+        ): T = runCatching { block() }
+            .onFailure {
+                recoveredFromStartupIssue = true
+                Log.w(TAG, "Failed to load $label. Using fallback value.", it)
+            }
+            .getOrDefault(fallback)
+
+        val settings = recover("quiz settings", defaultSettings) {
+            quizRepository.getQuizSettings().sanitize()
         }
-        val progress = quizRepository.getPlayerProgress()
-        val themes = quizRepository.getThemePresets()
-        val atlasNodes = quizRepository.getAtlasNodes()
-        val achievements = quizRepository.getAchievements()
-        val packs = quizRepository.getQuizPacks()
-        val aiConfig = quizRepository.getAiGenerationConfig()
+        if (settings.demoResetOnLaunch) {
+            runCatching { quizRepository.resetProgress() }
+                .onFailure { Log.w(TAG, "Failed to reset progress on launch.", it) }
+        }
+        val progress = recover("player progress", PlayerProgress()) {
+            quizRepository.getPlayerProgress()
+        }
+        val themes = recover("theme presets", quizRepository.getThemePresets()) {
+            quizRepository.getThemePresets()
+        }
+        val atlasNodes = recover("atlas nodes", quizRepository.getAtlasNodes()) {
+            quizRepository.getAtlasNodes()
+        }
+        val achievements = recover("achievements", quizRepository.getAchievements()) {
+            quizRepository.getAchievements()
+        }
+        val packs = recover("quiz packs", emptyList()) {
+            quizRepository.getQuizPacks()
+        }
+        val aiConfig = recover("AI config", AiGenerationConfig()) {
+            quizRepository.getAiGenerationConfig()
+        }
         val selectedThemeId = themes.firstOrNull { it.id == settings.defaultThemeId }?.id
             ?: themes.firstOrNull()?.id
             ?: settings.defaultThemeId
@@ -499,7 +529,12 @@ class QuizViewModel @Inject constructor(
                 legendUnlockedDifficulties = Difficulty.entries
                     .filter { difficulty -> legendEligibilityUseCase(progress, difficulty) }
                     .toSet(),
-                timerSecondsLeft = safeSettings.timerSeconds
+                timerSecondsLeft = safeSettings.timerSeconds,
+                generationErrorMessage = if (recoveredFromStartupIssue) {
+                    "Локальные данные были частично повреждены. Приложение запущено в безопасном режиме."
+                } else {
+                    null
+                }
             )
         }
     }
@@ -896,6 +931,7 @@ class QuizViewModel @Inject constructor(
     }
 
     private companion object {
+        const val TAG = "QuizViewModel"
         val NON_LETTER_PATTERN = "[^\\p{L}\\p{Nd}]+".toRegex()
         val MULTIPLE_SPACES_PATTERN = "\\s+".toRegex()
     }

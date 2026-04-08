@@ -1,10 +1,13 @@
 package com.example.newapp.data.source
 
 import android.content.Context
+import android.util.Log
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -25,12 +28,17 @@ import com.example.newapp.data.model.QuizSettings
 import com.example.newapp.data.model.RunSummary
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.json.JSONArray
 import org.json.JSONObject
 
-private val Context.quizPreferencesDataStore by preferencesDataStore(name = "aura_node_preferences")
+private val Context.quizPreferencesDataStore by preferencesDataStore(
+    name = "aura_node_preferences",
+    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() }
+)
 
 class QuizPreferencesDataSource @Inject constructor(
     @param:ApplicationContext private val context: Context,
@@ -38,35 +46,29 @@ class QuizPreferencesDataSource @Inject constructor(
 ) {
 
     suspend fun readMergedSettings(defaults: QuizSettings): QuizSettings {
-        val preferences = context.quizPreferencesDataStore.data.first()
-        return defaults.copy(
-            showTimer = preferences[Keys.SHOW_TIMER] ?: defaults.showTimer,
-            compactUi = preferences[Keys.COMPACT_UI] ?: defaults.compactUi,
-            motionEnabled = preferences[Keys.MOTION_ENABLED] ?: defaults.motionEnabled,
-            hapticsEnabled = preferences[Keys.HAPTICS_ENABLED] ?: defaults.hapticsEnabled,
-            soundEnabled = preferences[Keys.SOUND_ENABLED] ?: defaults.soundEnabled,
-            juryModeEnabled = preferences[Keys.JURY_MODE_ENABLED] ?: defaults.juryModeEnabled,
-            demoResetOnLaunch = preferences[Keys.DEMO_RESET_ON_LAUNCH] ?: defaults.demoResetOnLaunch,
-            defaultThemeId = preferences[Keys.SELECTED_THEME_ID] ?: defaults.defaultThemeId,
-            defaultPackId = preferences[Keys.DEFAULT_PACK_ID] ?: defaults.defaultPackId,
-            defaultMode = preferences[Keys.DEFAULT_MODE]?.let(QuizMode::valueOf) ?: defaults.defaultMode,
-            answerMode = preferences[Keys.ANSWER_MODE]?.let(AnswerMode::valueOf) ?: defaults.answerMode,
-            homeContentPreference = preferences[Keys.HOME_CONTENT_PREFERENCE]
-                ?.let(HomeContentPreference::valueOf)
-                ?: defaults.homeContentPreference,
-            hasCompletedOnboarding = preferences[Keys.HAS_COMPLETED_ONBOARDING]
-                ?: defaults.hasCompletedOnboarding
-        )
+        val preferences = safePreferences()
+        return mergeSettings(preferences, defaults)
     }
 
     suspend fun readPlayerProgress(): PlayerProgress {
-        val preferences = context.quizPreferencesDataStore.data.first()
+        val preferences = safePreferences()
         return PlayerProgress(
             unlockedAtlasNodeIds = preferences[Keys.UNLOCKED_ATLAS_NODES].orEmpty(),
             unlockedAchievementIds = preferences[Keys.UNLOCKED_ACHIEVEMENTS].orEmpty(),
             discoveredThemeIds = preferences[Keys.DISCOVERED_THEMES].orEmpty(),
-            bestRuns = preferences[Keys.BEST_RUNS_JSON]?.let(::decodeRunSummaries).orEmpty(),
-            latestRun = preferences[Keys.LATEST_RUN_JSON]?.let(::decodeRunSummary)
+            bestRuns = preferences[Keys.BEST_RUNS_JSON]
+                ?.let { rawValue ->
+                    runCatching { decodeRunSummaries(rawValue) }
+                        .onFailure { Log.w(TAG, "Failed to decode saved best runs.", it) }
+                        .getOrDefault(emptyList())
+                }
+                .orEmpty(),
+            latestRun = preferences[Keys.LATEST_RUN_JSON]
+                ?.let { rawValue ->
+                    runCatching { decodeRunSummary(rawValue) }
+                        .onFailure { Log.w(TAG, "Failed to decode latest run.", it) }
+                        .getOrNull()
+                }
         )
     }
 
@@ -98,9 +100,11 @@ class QuizPreferencesDataSource @Inject constructor(
     }
 
     suspend fun readAiGenerationConfig(): AiGenerationConfig {
-        val preferences = context.quizPreferencesDataStore.data.first()
+        val preferences = safePreferences()
         return AiGenerationConfig(
-            provider = preferences[Keys.AI_PROVIDER]?.let(AiProvider::valueOf) ?: AiGenerationConfig().provider,
+            provider = preferences[Keys.AI_PROVIDER]
+                ?.let(::parseAiProvider)
+                ?: AiGenerationConfig().provider,
             apiKey = secureValueCipher.decrypt(preferences[Keys.AI_API_KEY].orEmpty()),
             cloudGenerationEnabled = preferences[Keys.AI_CLOUD_ENABLED]
                 ?: AiGenerationConfig().cloudGenerationEnabled,
@@ -129,7 +133,11 @@ class QuizPreferencesDataSource @Inject constructor(
             preferences[Keys.UNLOCKED_ACHIEVEMENTS] = progress.unlockedAchievementIds
             preferences[Keys.DISCOVERED_THEMES] = progress.discoveredThemeIds
             preferences[Keys.BEST_RUNS_JSON] = encodeRunSummaries(progress.bestRuns)
-            progress.latestRun?.let { preferences[Keys.LATEST_RUN_JSON] = encodeRunSummary(it) }
+            if (progress.latestRun != null) {
+                preferences[Keys.LATEST_RUN_JSON] = encodeRunSummary(progress.latestRun)
+            } else {
+                preferences.remove(Keys.LATEST_RUN_JSON)
+            }
         }
     }
 
@@ -137,26 +145,65 @@ class QuizPreferencesDataSource @Inject constructor(
         context.quizPreferencesDataStore.edit { it.clearProgress() }
     }
 
-    fun userSettingsFlow(defaults: QuizSettings) = context.quizPreferencesDataStore.data.map { preferences ->
-        defaults.copy(
-            showTimer = preferences[Keys.SHOW_TIMER] ?: defaults.showTimer,
-            compactUi = preferences[Keys.COMPACT_UI] ?: defaults.compactUi,
-            motionEnabled = preferences[Keys.MOTION_ENABLED] ?: defaults.motionEnabled,
-            hapticsEnabled = preferences[Keys.HAPTICS_ENABLED] ?: defaults.hapticsEnabled,
-            soundEnabled = preferences[Keys.SOUND_ENABLED] ?: defaults.soundEnabled,
-            juryModeEnabled = preferences[Keys.JURY_MODE_ENABLED] ?: defaults.juryModeEnabled,
-            demoResetOnLaunch = preferences[Keys.DEMO_RESET_ON_LAUNCH] ?: defaults.demoResetOnLaunch,
-            defaultThemeId = preferences[Keys.SELECTED_THEME_ID] ?: defaults.defaultThemeId,
-            defaultPackId = preferences[Keys.DEFAULT_PACK_ID] ?: defaults.defaultPackId,
-            defaultMode = preferences[Keys.DEFAULT_MODE]?.let(QuizMode::valueOf) ?: defaults.defaultMode,
-            answerMode = preferences[Keys.ANSWER_MODE]?.let(AnswerMode::valueOf) ?: defaults.answerMode,
-            homeContentPreference = preferences[Keys.HOME_CONTENT_PREFERENCE]
-                ?.let(HomeContentPreference::valueOf)
-                ?: defaults.homeContentPreference,
-            hasCompletedOnboarding = preferences[Keys.HAS_COMPLETED_ONBOARDING]
-                ?: defaults.hasCompletedOnboarding
-        )
-    }
+    fun userSettingsFlow(defaults: QuizSettings) = context.quizPreferencesDataStore.data
+        .catch { throwable ->
+            if (throwable is CancellationException) throw throwable
+            Log.w(TAG, "Failed to observe preferences, emitting defaults.", throwable)
+            emit(emptyPreferences())
+        }
+        .map { preferences -> mergeSettings(preferences, defaults) }
+
+    private suspend fun safePreferences(): Preferences = context.quizPreferencesDataStore.data
+        .catch { throwable ->
+            if (throwable is CancellationException) throw throwable
+            Log.w(TAG, "Failed to read preferences, falling back to empty preferences.", throwable)
+            emit(emptyPreferences())
+        }
+        .first()
+
+    private fun mergeSettings(
+        preferences: Preferences,
+        defaults: QuizSettings
+    ): QuizSettings = defaults.copy(
+        showTimer = preferences[Keys.SHOW_TIMER] ?: defaults.showTimer,
+        compactUi = preferences[Keys.COMPACT_UI] ?: defaults.compactUi,
+        motionEnabled = preferences[Keys.MOTION_ENABLED] ?: defaults.motionEnabled,
+        hapticsEnabled = preferences[Keys.HAPTICS_ENABLED] ?: defaults.hapticsEnabled,
+        soundEnabled = preferences[Keys.SOUND_ENABLED] ?: defaults.soundEnabled,
+        juryModeEnabled = preferences[Keys.JURY_MODE_ENABLED] ?: defaults.juryModeEnabled,
+        demoResetOnLaunch = preferences[Keys.DEMO_RESET_ON_LAUNCH] ?: defaults.demoResetOnLaunch,
+        defaultThemeId = preferences[Keys.SELECTED_THEME_ID] ?: defaults.defaultThemeId,
+        defaultPackId = preferences[Keys.DEFAULT_PACK_ID] ?: defaults.defaultPackId,
+        defaultMode = preferences[Keys.DEFAULT_MODE]
+            ?.let { rawValue ->
+                parseQuizMode(rawValue).also {
+                    if (it.name != rawValue) {
+                        Log.w(TAG, "Unknown saved quiz mode '$rawValue'. Falling back to ${it.name}.")
+                    }
+                }
+            }
+            ?: defaults.defaultMode,
+        answerMode = preferences[Keys.ANSWER_MODE]
+            ?.let { rawValue ->
+                parseAnswerMode(rawValue).also {
+                    if (it.name != rawValue) {
+                        Log.w(TAG, "Unknown saved answer mode '$rawValue'. Falling back to ${it.name}.")
+                    }
+                }
+            }
+            ?: defaults.answerMode,
+        homeContentPreference = preferences[Keys.HOME_CONTENT_PREFERENCE]
+            ?.let { rawValue ->
+                parseHomeContentPreference(rawValue).also {
+                    if (it.name != rawValue) {
+                        Log.w(TAG, "Unknown home preference '$rawValue'. Falling back to ${it.name}.")
+                    }
+                }
+            }
+            ?: defaults.homeContentPreference,
+        hasCompletedOnboarding = preferences[Keys.HAS_COMPLETED_ONBOARDING]
+            ?: defaults.hasCompletedOnboarding
+    )
 
     private fun MutablePreferences.clearProgress() {
         remove(Keys.UNLOCKED_ATLAS_NODES)
@@ -204,7 +251,7 @@ class QuizPreferencesDataSource @Inject constructor(
     private fun decodeRunSummary(rawValue: String): RunSummary {
         val jsonObject = JSONObject(rawValue)
         return RunSummary(
-            timestamp = jsonObject.getLong("timestamp"),
+            timestamp = jsonObject.optLong("timestamp", System.currentTimeMillis()),
             packId = jsonObject.optString("packId", QuizPack.OFFICIAL_ALTAI_PACK_ID),
             packTitle = jsonObject.optString("packTitle"),
             packType = jsonObject.optString("packType")
@@ -215,20 +262,20 @@ class QuizPreferencesDataSource @Inject constructor(
                         .getOrDefault(PackGenerationSource.OFFICIAL)
                 },
             sourceFileName = jsonObject.optString("sourceFileName"),
-            difficulty = Difficulty.valueOf(jsonObject.getString("difficulty")),
-            mode = QuizMode.valueOf(jsonObject.getString("mode")),
-            themeId = jsonObject.getString("themeId"),
-            score = jsonObject.getInt("score"),
-            maxScore = jsonObject.getInt("maxScore"),
-            correctAnswers = jsonObject.getInt("correctAnswers"),
-            totalQuestions = jsonObject.getInt("totalQuestions"),
-            accuracyRatio = jsonObject.getDouble("accuracyRatio").toFloat(),
-            currentStreak = jsonObject.getInt("currentStreak"),
-            longestStreak = jsonObject.getInt("longestStreak"),
-            timeBonus = jsonObject.getInt("timeBonus"),
-            medalTier = MedalTier.valueOf(jsonObject.getString("medalTier")),
-            unlockedNodeIds = jsonObject.getJSONArray("unlockedNodeIds").toStringList(),
-            earnedAchievementIds = jsonObject.getJSONArray("earnedAchievementIds").toStringList()
+            difficulty = parseDifficulty(jsonObject.optString("difficulty")),
+            mode = parseQuizMode(jsonObject.optString("mode")),
+            themeId = jsonObject.optString("themeId", QuizSettings.DEFAULT_THEME_ID),
+            score = jsonObject.optInt("score"),
+            maxScore = jsonObject.optInt("maxScore"),
+            correctAnswers = jsonObject.optInt("correctAnswers"),
+            totalQuestions = jsonObject.optInt("totalQuestions"),
+            accuracyRatio = jsonObject.optDouble("accuracyRatio").toFloat(),
+            currentStreak = jsonObject.optInt("currentStreak"),
+            longestStreak = jsonObject.optInt("longestStreak"),
+            timeBonus = jsonObject.optInt("timeBonus"),
+            medalTier = parseMedalTier(jsonObject.optString("medalTier")),
+            unlockedNodeIds = jsonObject.optJSONArray("unlockedNodeIds")?.toStringList().orEmpty(),
+            earnedAchievementIds = jsonObject.optJSONArray("earnedAchievementIds")?.toStringList().orEmpty()
         )
     }
 
@@ -237,6 +284,30 @@ class QuizPreferencesDataSource @Inject constructor(
             add(getString(index))
         }
     }
+
+    private fun parseQuizMode(rawValue: String): QuizMode = runCatching {
+        QuizMode.valueOf(rawValue.ifBlank { QuizMode.CLASSIC.name })
+    }.getOrDefault(QuizMode.CLASSIC)
+
+    private fun parseAnswerMode(rawValue: String): AnswerMode = runCatching {
+        AnswerMode.valueOf(rawValue.ifBlank { AnswerMode.CLASSIC_OPTIONS.name })
+    }.getOrDefault(AnswerMode.CLASSIC_OPTIONS)
+
+    private fun parseHomeContentPreference(rawValue: String): HomeContentPreference = runCatching {
+        HomeContentPreference.valueOf(rawValue.ifBlank { HomeContentPreference.OFFICIAL_FIRST.name })
+    }.getOrDefault(HomeContentPreference.OFFICIAL_FIRST)
+
+    private fun parseAiProvider(rawValue: String): AiProvider = runCatching {
+        AiProvider.valueOf(rawValue.ifBlank { AiGenerationConfig().provider.name })
+    }.getOrDefault(AiGenerationConfig().provider)
+
+    private fun parseDifficulty(rawValue: String): Difficulty = runCatching {
+        Difficulty.valueOf(rawValue.ifBlank { Difficulty.CADET.name })
+    }.getOrDefault(Difficulty.CADET)
+
+    private fun parseMedalTier(rawValue: String): MedalTier = runCatching {
+        MedalTier.valueOf(rawValue.ifBlank { MedalTier.NONE.name })
+    }.getOrDefault(MedalTier.NONE)
 
     private object Keys {
         val SELECTED_THEME_ID = stringPreferencesKey("selected_theme_id")
@@ -265,5 +336,9 @@ class QuizPreferencesDataSource @Inject constructor(
         val LATEST_RUN_JSON = stringPreferencesKey("latest_run_json")
         val TOTAL_RUNS = intPreferencesKey("total_runs")
         val LAST_PLAYED_AT = longPreferencesKey("last_played_at")
+    }
+
+    private companion object {
+        const val TAG = "QuizPreferences"
     }
 }
