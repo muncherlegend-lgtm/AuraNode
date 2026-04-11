@@ -15,6 +15,7 @@ import com.example.newapp.data.model.QuizMode
 import com.example.newapp.data.model.QuizSettings
 import com.example.newapp.data.model.RunSummary
 import com.example.newapp.data.model.ThemePreset
+import com.example.newapp.ui.atlas.AtlasPanelMode
 
 data class QuizUiState(
     val isLoading: Boolean = true,
@@ -54,7 +55,11 @@ data class QuizUiState(
     val latestRunSummary: RunSummary? = null,
     val runUnlockedNodeIds: Set<String> = emptySet(),
     val runEarnedAchievementIds: Set<String> = emptySet(),
-    val legendUnlockedDifficulties: Set<Difficulty> = emptySet()
+    val legendUnlockedDifficulties: Set<Difficulty> = emptySet(),
+    val selectedAtlasNodeId: String? = null,
+    val latestUnlockedAtlasNodeId: String? = null,
+    val atlasFocusRequestId: Long = 0L,
+    val atlasPanelMode: AtlasPanelMode = AtlasPanelMode.NODE_DETAILS
 ) {
     val currentQuestion: Question?
         get() = questions.getOrNull(currentQuestionIndex)
@@ -79,6 +84,9 @@ data class QuizUiState(
 
     val unlockedAtlasNodes: List<AtlasNode>
         get() = atlasNodes.filter { playerProgress.unlockedAtlasNodeIds.contains(it.id) || runUnlockedNodeIds.contains(it.id) }
+
+    val selectedAtlasNode: AtlasNode?
+        get() = atlasNodes.firstOrNull { it.id == selectedAtlasNodeId }
 
     val earnedAchievements: List<Achievement>
         get() = achievements.filter { playerProgress.unlockedAchievementIds.contains(it.id) || runEarnedAchievementIds.contains(it.id) }

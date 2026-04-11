@@ -10,5 +10,7 @@ data class AtlasNode(
     val factCategory: FactCategory,
     val xFraction: Float,
     val yFraction: Float,
+    val labelXFraction: Float = xFraction,
+    val labelYFraction: Float = yFraction,
     val connections: List<String> = emptyList()
 )

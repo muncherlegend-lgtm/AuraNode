@@ -26,6 +26,7 @@ import com.example.newapp.domain.usecase.AchievementEvaluatorUseCase
 import com.example.newapp.domain.usecase.AtlasUnlockUseCase
 import com.example.newapp.domain.usecase.LegendEligibilityUseCase
 import com.example.newapp.domain.usecase.RunScoringUseCase
+import com.example.newapp.ui.atlas.AtlasPanelMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -286,6 +287,40 @@ class QuizViewModel @Inject constructor(
         startQuiz(difficulty)
     }
 
+    fun selectAtlasNode(nodeId: String) {
+        _uiState.update { state ->
+            if (state.atlasNodes.none { it.id == nodeId }) {
+                state
+            } else {
+                state.copy(
+                    selectedAtlasNodeId = nodeId,
+                    atlasPanelMode = AtlasPanelMode.NODE_DETAILS
+                )
+            }
+        }
+    }
+
+    fun focusLatestUnlockedAtlasNode() {
+        _uiState.update { state ->
+            val focusNodeId = state.latestUnlockedAtlasNodeId
+                ?: state.unlockedAtlasNodes.lastOrNull()?.id
+                ?: state.atlasNodes.firstOrNull()?.id
+            if (focusNodeId == null) {
+                state
+            } else {
+                state.copy(
+                    selectedAtlasNodeId = focusNodeId,
+                    atlasFocusRequestId = state.atlasFocusRequestId + 1,
+                    atlasPanelMode = AtlasPanelMode.NODE_DETAILS
+                )
+            }
+        }
+    }
+
+    fun setAtlasPanelMode(mode: AtlasPanelMode) {
+        _uiState.update { it.copy(atlasPanelMode = mode) }
+    }
+
     fun updateAnswerInput(value: String) {
         _uiState.update { state ->
             if (state.isAnswerLocked || state.isQuizCompleted) {
@@ -429,7 +464,11 @@ class QuizViewModel @Inject constructor(
                     latestRunSummary = null,
                     runUnlockedNodeIds = emptySet(),
                     runEarnedAchievementIds = emptySet(),
-                    legendUnlockedDifficulties = emptySet()
+                    legendUnlockedDifficulties = emptySet(),
+                    selectedAtlasNodeId = state.atlasNodes.firstOrNull()?.id,
+                    latestUnlockedAtlasNodeId = null,
+                    atlasFocusRequestId = 0L,
+                    atlasPanelMode = AtlasPanelMode.NODE_DETAILS
                 )
             }
         }
@@ -459,7 +498,9 @@ class QuizViewModel @Inject constructor(
                 submittedAnswerText = null,
                 latestRunSummary = null,
                 runUnlockedNodeIds = emptySet(),
-                runEarnedAchievementIds = emptySet()
+                runEarnedAchievementIds = emptySet(),
+                atlasFocusRequestId = state.atlasFocusRequestId,
+                atlasPanelMode = AtlasPanelMode.NODE_DETAILS
             )
         }
     }
@@ -509,6 +550,10 @@ class QuizViewModel @Inject constructor(
             ?: settings.defaultThemeId
         val selectedPackId = resolveSelectedPackId(settings, packs)
         val safeSettings = settings.copy(defaultPackId = selectedPackId)
+        val latestUnlockedAtlasNodeId = progress.latestRun?.unlockedNodeIds?.lastOrNull()
+            ?: progress.unlockedAtlasNodeIds.lastOrNull()
+        val selectedAtlasNodeId = atlasNodes.firstOrNull { it.id == latestUnlockedAtlasNodeId }?.id
+            ?: atlasNodes.firstOrNull()?.id
         if (safeSettings.defaultPackId != settings.defaultPackId) {
             quizRepository.saveQuizSettings(safeSettings)
         }
@@ -530,6 +575,9 @@ class QuizViewModel @Inject constructor(
                     .filter { difficulty -> legendEligibilityUseCase(progress, difficulty) }
                     .toSet(),
                 timerSecondsLeft = safeSettings.timerSeconds,
+                selectedAtlasNodeId = selectedAtlasNodeId,
+                latestUnlockedAtlasNodeId = latestUnlockedAtlasNodeId,
+                atlasFocusRequestId = if (latestUnlockedAtlasNodeId != null) 1L else 0L,
                 generationErrorMessage = if (recoveredFromStartupIssue) {
                     "Локальные данные были частично повреждены. Приложение запущено в безопасном режиме."
                 } else {
@@ -594,7 +642,8 @@ class QuizViewModel @Inject constructor(
             secondsLeft = state.timerSecondsLeft,
             currentStreak = state.currentStreak
         )
-        val unlockedNodes = state.runUnlockedNodeIds + atlasUnlockUseCase.unlockForQuestion(question, isCorrect)
+        val newUnlocks = atlasUnlockUseCase.unlockForQuestion(question, isCorrect)
+        val unlockedNodes = state.runUnlockedNodeIds + newUnlocks
         val nextLongestStreak = maxOf(state.longestStreak, resolution.nextStreak)
 
         _uiState.update {
@@ -610,6 +659,8 @@ class QuizViewModel @Inject constructor(
                 answerInput = "",
                 submittedAnswerText = submittedText,
                 runUnlockedNodeIds = unlockedNodes,
+                selectedAtlasNodeId = newUnlocks.lastOrNull() ?: it.selectedAtlasNodeId,
+                latestUnlockedAtlasNodeId = newUnlocks.lastOrNull() ?: it.latestUnlockedAtlasNodeId,
                 answerFeedbackType = if (isCorrect) {
                     AnswerFeedbackType.CORRECT
                 } else {
@@ -755,6 +806,10 @@ class QuizViewModel @Inject constructor(
             val updatedLegendUnlocks = Difficulty.entries
                 .filter { targetDifficulty -> legendEligibilityUseCase(updatedProgress, targetDifficulty) }
                 .toSet()
+            val latestUnlockedAtlasNodeId = finalSummary.unlockedNodeIds.lastOrNull()
+                ?: currentState.latestUnlockedAtlasNodeId
+            val selectedAtlasNodeId = currentState.atlasNodes.firstOrNull { it.id == latestUnlockedAtlasNodeId }?.id
+                ?: currentState.selectedAtlasNodeId
 
             _uiState.update {
                 it.copy(
@@ -763,7 +818,15 @@ class QuizViewModel @Inject constructor(
                     playerProgress = updatedProgress,
                     latestRunSummary = finalSummary,
                     runEarnedAchievementIds = earnedAchievements.toSet(),
-                    legendUnlockedDifficulties = updatedLegendUnlocks
+                    legendUnlockedDifficulties = updatedLegendUnlocks,
+                    selectedAtlasNodeId = selectedAtlasNodeId,
+                    latestUnlockedAtlasNodeId = latestUnlockedAtlasNodeId,
+                    atlasFocusRequestId = if (latestUnlockedAtlasNodeId != null) {
+                        it.atlasFocusRequestId + 1
+                    } else {
+                        it.atlasFocusRequestId
+                    },
+                    atlasPanelMode = AtlasPanelMode.NODE_DETAILS
                 )
             }
         }

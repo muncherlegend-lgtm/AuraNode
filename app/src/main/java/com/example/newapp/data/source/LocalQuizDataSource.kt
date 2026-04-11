@@ -170,6 +170,8 @@ class LocalQuizDataSource @Inject constructor(
         return buildList {
             for (index in 0 until jsonArray.length()) {
                 val item = jsonArray.getJSONObject(index)
+                val xFraction = item.optDouble("xFraction", 0.5).toFloat().coerceIn(0.05f, 0.95f)
+                val yFraction = item.optDouble("yFraction", 0.5).toFloat().coerceIn(0.08f, 0.92f)
                 add(
                     AtlasNode(
                         id = item.getString("id"),
@@ -179,8 +181,12 @@ class LocalQuizDataSource @Inject constructor(
                         highlightFact = item.getString("highlightFact"),
                         rewardTitle = item.getString("rewardTitle"),
                         factCategory = parseFactCategory(item.optString("factCategory")),
-                        xFraction = item.optDouble("xFraction", 0.5).toFloat().coerceIn(0.05f, 0.95f),
-                        yFraction = item.optDouble("yFraction", 0.5).toFloat().coerceIn(0.08f, 0.92f),
+                        xFraction = xFraction,
+                        yFraction = yFraction,
+                        labelXFraction = item.optDouble("labelXFraction", xFraction.toDouble()).toFloat()
+                            .coerceIn(0.05f, 0.95f),
+                        labelYFraction = item.optDouble("labelYFraction", (yFraction - 0.09f).toDouble()).toFloat()
+                            .coerceIn(0.05f, 0.95f),
                         connections = item.optJSONArray("connections")?.toStringList().orEmpty()
                     )
                 )
@@ -287,14 +293,14 @@ class LocalQuizDataSource @Inject constructor(
     )
 
     private fun fallbackAtlasNodes(): List<AtlasNode> = listOf(
-        AtlasNode("barnaul", "Барнаул", "Столица края", "Город сереброплавильного завода и культурный центр современного Алтая.", "Барнаул остаётся административным центром Алтайского края с 1937 года.", "Открыт исторический центр", FactCategory.HISTORY, 0.18f, 0.68f, listOf("biysk", "belokurikha")),
-        AtlasNode("biysk", "Бийск", "Наукоград", "Один из главных научно-промышленных центров Алтая и ворота на Чуйский тракт.", "Бийск имеет статус наукограда Российской Федерации.", "Открыт научный маршрут", FactCategory.SCIENCE, 0.34f, 0.62f, listOf("barnaul", "chuysky_tract", "denisova_cave")),
-        AtlasNode("belokurikha", "Белокуриха", "Курорт", "Термальный курорт с мягким предгорным климатом и санаторной славой.", "Белокуриха известна природными термальными источниками.", "Открыт курортный кластер", FactCategory.TRAVEL, 0.44f, 0.72f, listOf("barnaul", "biysk")),
-        AtlasNode("denisova_cave", "Денисова пещера", "Археология", "Одна из самых известных археологических точек мира на территории Алтая.", "Именно здесь были сделаны открытия, изменившие представление об эволюции человека.", "Открыт древний слой", FactCategory.SCIENCE, 0.62f, 0.46f, listOf("biysk", "tigirek")),
-        AtlasNode("tigirek", "Тигирекский заповедник", "Западный Алтай", "Охраняемые горные экосистемы юго-запада края и редкие виды животных.", "Заповедник хранит природные комплексы Западного Алтая.", "Открыта заповедная зона", FactCategory.NATURE, 0.72f, 0.30f, listOf("denisova_cave", "kolyvan")),
-        AtlasNode("chuysky_tract", "Чуйский тракт", "Путь экспедиции", "Легендарная трасса Р-256, связывающая равнину, предгорья и Алтайские маршруты.", "Чуйский тракт входит в число самых известных дорог России.", "Открыта главная магистраль", FactCategory.TRAVEL, 0.56f, 0.58f, listOf("biysk", "kulunda")),
-        AtlasNode("kulunda", "Кулундинская степь", "Степной запад", "Просторная степная территория с солёными озёрами и аграрной мощью.", "Кулундинская степь формирует особый природный образ западной части края.", "Открыт степной горизонт", FactCategory.NATURE, 0.20f, 0.30f, listOf("barnaul", "chuysky_tract")),
-        AtlasNode("kolyvan", "Колывань", "Камнерезная школа", "Историческое село, связанное с камнерезным искусством и яшмовыми шедеврами.", "Колыванская фабрика прославилась «Царицей ваз» в Эрмитаже.", "Открыта камнерезная легенда", FactCategory.CULTURE, 0.84f, 0.22f, listOf("tigirek"))
+        AtlasNode("barnaul", "Барнаул", "Столица края", "Город сереброплавильного завода и культурный центр современного Алтая.", "Барнаул остаётся административным центром Алтайского края с 1937 года.", "Открыт исторический центр", FactCategory.HISTORY, 0.18f, 0.68f, 0.12f, 0.80f, listOf("biysk", "belokurikha", "kulunda")),
+        AtlasNode("biysk", "Бийск", "Наукоград", "Один из главных научно-промышленных центров Алтая и ворота на Чуйский тракт.", "Бийск имеет статус наукограда Российской Федерации.", "Открыт научный маршрут", FactCategory.SCIENCE, 0.34f, 0.62f, 0.28f, 0.72f, listOf("barnaul", "chuysky_tract", "denisova_cave")),
+        AtlasNode("belokurikha", "Белокуриха", "Курорт", "Термальный курорт с мягким предгорным климатом и санаторной славой.", "Белокуриха известна природными термальными источниками.", "Открыт курортный кластер", FactCategory.TRAVEL, 0.44f, 0.72f, 0.48f, 0.84f, listOf("barnaul", "biysk")),
+        AtlasNode("denisova_cave", "Денисова пещера", "Археология", "Одна из самых известных археологических точек мира на территории Алтая.", "Именно здесь были сделаны открытия, изменившие представление об эволюции человека.", "Открыт древний слой", FactCategory.SCIENCE, 0.62f, 0.46f, 0.72f, 0.38f, listOf("biysk", "tigirek")),
+        AtlasNode("tigirek", "Тигирекский заповедник", "Западный Алтай", "Охраняемые горные экосистемы юго-запада края и редкие виды животных.", "Заповедник хранит природные комплексы Западного Алтая.", "Открыта заповедная зона", FactCategory.NATURE, 0.72f, 0.30f, 0.81f, 0.19f, listOf("denisova_cave", "kolyvan")),
+        AtlasNode("chuysky_tract", "Чуйский тракт", "Путь экспедиции", "Легендарная трасса Р-256, связывающая равнину, предгорья и Алтайские маршруты.", "Чуйский тракт входит в число самых известных дорог России.", "Открыта главная магистраль", FactCategory.TRAVEL, 0.56f, 0.58f, 0.61f, 0.70f, listOf("biysk", "kulunda")),
+        AtlasNode("kulunda", "Кулундинская степь", "Степной запад", "Просторная степная территория с солёными озёрами и аграрной мощью.", "Кулундинская степь формирует особый природный образ западной части края.", "Открыт степной горизонт", FactCategory.NATURE, 0.20f, 0.30f, 0.14f, 0.18f, listOf("barnaul", "chuysky_tract")),
+        AtlasNode("kolyvan", "Колывань", "Камнерезная школа", "Историческое село, связанное с камнерезным искусством и яшмовыми шедеврами.", "Колыванская фабрика прославилась «Царицей ваз» в Эрмитаже.", "Открыта камнерезная легенда", FactCategory.CULTURE, 0.84f, 0.22f, 0.82f, 0.10f, listOf("tigirek"))
     )
 
     private fun fallbackAchievements(): List<Achievement> = listOf(

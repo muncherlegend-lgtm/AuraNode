@@ -10,6 +10,8 @@
       "factCategory": "HISTORY",
       "xFraction": 0.18,
       "yFraction": 0.68,
+      "labelXFraction": 0.10,
+      "labelYFraction": 0.80,
       "connections": ["biysk", "belokurikha", "kulunda"]
     },
     {
@@ -22,6 +24,8 @@
       "factCategory": "SCIENCE",
       "xFraction": 0.34,
       "yFraction": 0.62,
+      "labelXFraction": 0.27,
+      "labelYFraction": 0.72,
       "connections": ["barnaul", "chuysky_tract", "denisova_cave"]
     },
     {
@@ -34,6 +38,8 @@
       "factCategory": "TRAVEL",
       "xFraction": 0.44,
       "yFraction": 0.72,
+      "labelXFraction": 0.48,
+      "labelYFraction": 0.84,
       "connections": ["barnaul", "biysk"]
     },
     {
@@ -46,6 +52,8 @@
       "factCategory": "SCIENCE",
       "xFraction": 0.62,
       "yFraction": 0.46,
+      "labelXFraction": 0.72,
+      "labelYFraction": 0.38,
       "connections": ["biysk", "tigirek"]
     },
     {
@@ -58,6 +66,8 @@
       "factCategory": "NATURE",
       "xFraction": 0.72,
       "yFraction": 0.30,
+      "labelXFraction": 0.82,
+      "labelYFraction": 0.18,
       "connections": ["denisova_cave", "kolyvan"]
     },
     {
@@ -70,6 +80,8 @@
       "factCategory": "TRAVEL",
       "xFraction": 0.56,
       "yFraction": 0.58,
+      "labelXFraction": 0.60,
+      "labelYFraction": 0.70,
       "connections": ["biysk", "kulunda"]
     },
     {
@@ -82,6 +94,8 @@
       "factCategory": "NATURE",
       "xFraction": 0.20,
       "yFraction": 0.30,
+      "labelXFraction": 0.12,
+      "labelYFraction": 0.18,
       "connections": ["barnaul", "chuysky_tract"]
     },
     {
@@ -94,6 +108,8 @@
       "factCategory": "CULTURE",
       "xFraction": 0.84,
       "yFraction": 0.22,
+      "labelXFraction": 0.82,
+      "labelYFraction": 0.10,
       "connections": ["tigirek"]
     }
   ]

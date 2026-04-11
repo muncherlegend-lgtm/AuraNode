@@ -116,6 +116,8 @@ internal object QuizConfigParser {
         return buildList {
             for (index in 0 until jsonArray.length()) {
                 val item = jsonArray.getJSONObject(index)
+                val xFraction = item.optDouble("xFraction", 0.5).toFloat().coerceIn(0.05f, 0.95f)
+                val yFraction = item.optDouble("yFraction", 0.5).toFloat().coerceIn(0.08f, 0.92f)
                 add(
                     AtlasNode(
                         id = item.getString("id"),
@@ -125,8 +127,12 @@ internal object QuizConfigParser {
                         highlightFact = item.getString("highlightFact"),
                         rewardTitle = item.getString("rewardTitle"),
                         factCategory = parseFactCategory(item.optString("factCategory")),
-                        xFraction = item.optDouble("xFraction", 0.5).toFloat().coerceIn(0.05f, 0.95f),
-                        yFraction = item.optDouble("yFraction", 0.5).toFloat().coerceIn(0.08f, 0.92f),
+                        xFraction = xFraction,
+                        yFraction = yFraction,
+                        labelXFraction = item.optDouble("labelXFraction", xFraction.toDouble()).toFloat()
+                            .coerceIn(0.05f, 0.95f),
+                        labelYFraction = item.optDouble("labelYFraction", (yFraction - 0.09f).toDouble()).toFloat()
+                            .coerceIn(0.05f, 0.95f),
                         connections = item.optJSONArray("connections")?.toStringList().orEmpty()
                     )
                 )

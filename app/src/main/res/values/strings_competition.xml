@@ -6,10 +6,37 @@
 
     <string name="atlas_chip_title">Altai Atlas</string>
     <string name="atlas_title">Центр экспедиции</string>
+    <string name="atlas_subtitle">Живой маршрут по ключевым точкам Алтайского края</string>
     <string name="atlas_body">Открывайте точки Алтайского края, собирайте факты, медали и лучшие забеги в одном офлайн-хабе.</string>
     <string name="atlas_back_to_menu">В меню</string>
+    <string name="atlas_focus_latest">К последней точке</string>
+    <string name="atlas_reset_view">Сбросить обзор карты</string>
+    <string name="atlas_map_hint">Жесты: тяните карту, масштабируйте и нажимайте на точки маршрута</string>
+    <string name="atlas_panel_details">Точка маршрута</string>
+    <string name="atlas_panel_progress">Прогресс</string>
+    <string name="atlas_completion_format">%1$d из %2$d узлов</string>
+    <string name="atlas_latest_unlock_chip">Последняя точка: %1$s</string>
+    <string name="atlas_empty_selection">Выберите точку на карте, чтобы открыть детали маршрута.</string>
+    <string name="atlas_unlocked_status">Открыто</string>
+    <string name="atlas_locked_status">Закрыто</string>
+    <string name="atlas_locked_hint">%1$s пока скрыта. Откройте эту точку через официальный quiz flow.</string>
+    <string name="atlas_unlock_tip">Правильные ответы на вопросах экспедиции открывают новые точки и факты.</string>
+    <string name="atlas_connections_title">Следующие маршруты</string>
+    <string name="atlas_progress_completion">Завершение</string>
+    <string name="atlas_progress_percent">%1$d%%</string>
+    <string name="atlas_progress_nodes">Открытые точки</string>
+    <string name="atlas_progress_achievements">Достижения</string>
+    <string name="atlas_progress_best_runs">Лучшие забеги</string>
+    <string name="atlas_latest_unlock_title">Последнее открытие</string>
+    <string name="atlas_open_latest_unlock">Показать на карте</string>
     <string name="atlas_achievements_title">Достижения экспедиции</string>
     <string name="atlas_hall_of_fame_title">Зал достижений</string>
+    <string name="atlas_category_history">История</string>
+    <string name="atlas_category_culture">Культура</string>
+    <string name="atlas_category_science">Наука</string>
+    <string name="atlas_category_nature">Природа</string>
+    <string name="atlas_category_travel">Маршрут</string>
+    <string name="atlas_category_industry">Индустрия</string>
 
     <string name="share_card_title">AuraNode Expedition</string>
     <string name="share_card_accuracy_format">Точность %1$d%% · %2$s</string>

@@ -121,7 +121,10 @@ fun AuraNodeNavHost(
                                 }
                                 launchSingleTop = true
                             }
-                        }
+                        },
+                        onSelectAtlasNode = viewModel::selectAtlasNode,
+                        onFocusLatestUnlock = viewModel::focusLatestUnlockedAtlasNode,
+                        onAtlasPanelModeChanged = viewModel::setAtlasPanelMode
                     )
                 }
 

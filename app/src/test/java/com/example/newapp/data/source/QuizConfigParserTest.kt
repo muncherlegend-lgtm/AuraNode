@@ -165,6 +165,8 @@ class QuizConfigParserTest {
                   "factCategory": "HISTORY",
                   "xFraction": 1.5,
                   "yFraction": -2,
+                  "labelXFraction": 3.2,
+                  "labelYFraction": -5,
                   "connections": []
                 }
               ]
@@ -174,5 +176,34 @@ class QuizConfigParserTest {
 
         assertEquals(0.95f, parsed.single().xFraction)
         assertEquals(0.08f, parsed.single().yFraction)
+        assertEquals(0.95f, parsed.single().labelXFraction)
+        assertEquals(0.05f, parsed.single().labelYFraction)
+    }
+
+    @Test
+    fun parseAtlasNodesUsesDerivedLabelPositionWhenMissing() {
+        val parsed = QuizConfigParser.parseAtlasNodes(
+            """
+            {
+              "nodes": [
+                {
+                  "id": "biysk",
+                  "title": "Biysk",
+                  "subtitle": "Science",
+                  "description": "Desc",
+                  "highlightFact": "Fact",
+                  "rewardTitle": "Reward",
+                  "factCategory": "SCIENCE",
+                  "xFraction": 0.4,
+                  "yFraction": 0.6,
+                  "connections": []
+                }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        assertEquals(0.4f, parsed.single().labelXFraction)
+        assertEquals(0.51f, parsed.single().labelYFraction)
     }
 }
