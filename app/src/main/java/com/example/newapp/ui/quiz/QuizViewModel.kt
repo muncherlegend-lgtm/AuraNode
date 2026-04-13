@@ -216,6 +216,15 @@ class QuizViewModel @Inject constructor(
         }
     }
 
+    fun prepareAtlasFromMenu() {
+        _uiState.update {
+            it.copy(
+                selectedAtlasNodeId = null,
+                atlasPanelMode = AtlasPanelMode.HIDDEN
+            )
+        }
+    }
+
     fun focusLatestUnlockedAtlasNode() {
         val currentState = _uiState.value
         val targetNodeId = currentState.latestUnlockedAtlasNodeId
@@ -226,6 +235,28 @@ class QuizViewModel @Inject constructor(
                 selectedAtlasNodeId = targetNodeId,
                 atlasFocusRequestId = it.atlasFocusRequestId + 1
             )
+        }
+    }
+
+    fun openAtlasFromResult() {
+        val currentState = _uiState.value
+        val targetNodeId = currentState.latestRunSummary?.unlockedNodeIds?.lastOrNull()
+            ?: currentState.latestUnlockedAtlasNodeId
+            ?: currentState.unlockedAtlasNodes.lastOrNull()?.id
+
+        _uiState.update {
+            if (targetNodeId != null) {
+                it.copy(
+                    selectedAtlasNodeId = targetNodeId,
+                    atlasPanelMode = AtlasPanelMode.NODE_DETAILS,
+                    atlasFocusRequestId = it.atlasFocusRequestId + 1
+                )
+            } else {
+                it.copy(
+                    selectedAtlasNodeId = null,
+                    atlasPanelMode = AtlasPanelMode.EXPEDITION_PROGRESS
+                )
+            }
         }
     }
 

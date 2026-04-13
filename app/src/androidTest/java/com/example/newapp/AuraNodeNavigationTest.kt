@@ -21,6 +21,11 @@ class AuraNodeNavigationTest {
     @Test
     fun menuOpensCoreSections() {
         composeTestRule.onNodeWithTag(AuraNodeTestTags.MENU_SCREEN).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AuraNodeTestTags.MENU_OPEN_THEMES).performClick()
+        composeTestRule.onNodeWithTag(AuraNodeTestTags.THEMES_SCREEN).assertIsDisplayed()
+        composeTestRule.activity.runOnUiThread { composeTestRule.activity.onBackPressedDispatcher.onBackPressed() }
+        composeTestRule.waitForIdle()
+
         composeTestRule.onNodeWithTag(AuraNodeTestTags.MENU_OPEN_SETTINGS).performClick()
         composeTestRule.onNodeWithTag(AuraNodeTestTags.SETTINGS_SCREEN).assertIsDisplayed()
         composeTestRule.activity.runOnUiThread { composeTestRule.activity.onBackPressedDispatcher.onBackPressed() }
@@ -40,6 +45,11 @@ class AuraNodeNavigationTest {
             Thread.sleep(1900)
         }
 
+        composeTestRule.onNodeWithTag(AuraNodeTestTags.RESULT_SCREEN).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AuraNodeTestTags.RESULT_OPEN_ATLAS).performClick()
+        composeTestRule.onNodeWithTag(AuraNodeTestTags.ATLAS_SCREEN).assertIsDisplayed()
+        composeTestRule.activity.runOnUiThread { composeTestRule.activity.onBackPressedDispatcher.onBackPressed() }
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(AuraNodeTestTags.RESULT_SCREEN).assertIsDisplayed()
         composeTestRule.onNodeWithTag(AuraNodeTestTags.RESULT_RETRY).performClick()
         composeTestRule.onNodeWithTag(AuraNodeTestTags.QUIZ_SCREEN).assertIsDisplayed()

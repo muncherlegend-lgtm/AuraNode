@@ -20,6 +20,7 @@ import com.example.newapp.ui.screens.menu.MenuScreen
 import com.example.newapp.ui.screens.quiz.QuizScreen
 import com.example.newapp.ui.screens.result.ResultScreen
 import com.example.newapp.ui.screens.settings.SettingsScreen
+import com.example.newapp.ui.screens.themes.ThemesScreen
 import com.example.newapp.ui.theme.AuraNodeTheme
 
 @Composable
@@ -76,6 +77,7 @@ fun AuraNodeNavHost(
                         onDifficultySelected = viewModel::setSelectedDifficulty,
                         onModeSelected = viewModel::selectMode,
                         onOpenAtlas = {
+                            viewModel.prepareAtlasFromMenu()
                             navController.navigate(AuraNodeDestination.Atlas.route) {
                                 launchSingleTop = true
                             }
@@ -89,6 +91,11 @@ fun AuraNodeNavHost(
                             navController.navigate(AuraNodeDestination.Settings.route) {
                                 launchSingleTop = true
                             }
+                        },
+                        onOpenThemes = {
+                            navController.navigate(AuraNodeDestination.Themes.route) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -97,7 +104,11 @@ fun AuraNodeNavHost(
                     SettingsScreen(
                         uiState = uiState,
                         onBack = { navController.popBackStack() },
-                        onThemeSelected = viewModel::selectTheme,
+                        onOpenThemes = {
+                            navController.navigate(AuraNodeDestination.Themes.route) {
+                                launchSingleTop = true
+                            }
+                        },
                         onTimerEnabledChanged = viewModel::setTimerEnabled,
                         onTimerSecondsChanged = viewModel::setTimerSeconds,
                         onQuestionsCountChanged = viewModel::setQuestionsPerDifficulty,
@@ -109,6 +120,19 @@ fun AuraNodeNavHost(
                         onSoundChanged = viewModel::setSoundEnabled,
                         onDeleteAllCustomPacks = viewModel::deleteAllCustomPacks,
                         onClearProgress = viewModel::clearResultsAndProgress
+                    )
+                }
+
+                composable(AuraNodeDestination.Themes.route) {
+                    ThemesScreen(
+                        uiState = uiState,
+                        onBack = { navController.popBackStack() },
+                        onOpenSettings = {
+                            navController.navigate(AuraNodeDestination.Settings.route) {
+                                launchSingleTop = true
+                            }
+                        },
+                        onThemeSelected = viewModel::selectTheme
                     )
                 }
 
@@ -191,6 +215,7 @@ fun AuraNodeNavHost(
                             }
                         },
                         onOpenAtlas = {
+                            viewModel.openAtlasFromResult()
                             navController.navigate(AuraNodeDestination.Atlas.route) {
                                 launchSingleTop = true
                             }

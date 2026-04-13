@@ -29,6 +29,7 @@ import com.example.newapp.data.model.Difficulty
 @Composable
 fun DifficultyRouteCard(
     difficulty: Difficulty,
+    selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     compact: Boolean = false
@@ -50,9 +51,17 @@ fun DifficultyRouteCard(
                 onClick = onClick
             ),
         colors = CardDefaults.cardColors(
-            containerColor = presentation.container
+            containerColor = if (selected) {
+                presentation.container.copy(alpha = 0.98f)
+            } else {
+                presentation.container.copy(alpha = 0.82f)
+            }
         ),
-        borderColor = presentation.accent.copy(alpha = 0.24f)
+        borderColor = if (selected) {
+            presentation.accent
+        } else {
+            presentation.accent.copy(alpha = 0.24f)
+        }
     ) {
         Column(
             modifier = Modifier.padding(
@@ -94,6 +103,14 @@ fun DifficultyRouteCard(
                     text = stringResource(presentation.subtitleRes),
                     style = MaterialTheme.typography.bodyMedium,
                     color = presentation.onContainer.copy(alpha = 0.80f)
+                )
+            }
+
+            if (selected) {
+                AuraFactChip(
+                    text = "Выбрано",
+                    accent = presentation.accent,
+                    compact = true
                 )
             }
         }

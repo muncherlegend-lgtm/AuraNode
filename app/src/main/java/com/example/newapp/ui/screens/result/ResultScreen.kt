@@ -295,7 +295,7 @@ fun ResultScreen(
                         ) {
                             Text(text = "Пройти ещё раз")
                         }
-                        if (isOfficialPack && uiState.unlockedAtlasNodes.isNotEmpty()) {
+                        if (isOfficialPack) {
                             OutlinedButton(
                                 onClick = onOpenAtlas,
                                 modifier = Modifier

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -20,7 +21,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Source
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -37,6 +37,8 @@ import com.example.newapp.data.model.QuizMode
 import com.example.newapp.ui.AuraNodeTestTags
 import com.example.newapp.ui.components.AuraFactChip
 import com.example.newapp.ui.components.AuraNodeSurfaceCard
+import com.example.newapp.ui.components.DifficultyRouteCard
+import com.example.newapp.ui.components.QuizModeCard
 import com.example.newapp.ui.quiz.QuizUiState
 
 @Composable
@@ -48,6 +50,7 @@ fun MenuScreen(
     onOpenAtlas: () -> Unit,
     onOpenMaterials: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenThemes: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (uiState.isLoading) {
@@ -96,7 +99,7 @@ fun MenuScreen(
 
                         Text(
                             text = if (uiState.isOfficialPackSelected) {
-                                "Короткая викторина о регионе с понятным маршрутом: выберите режим, уровень и начните сразу с первого экрана."
+                                "Спокойная учебная викторина о регионе: выберите режим, уровень и начните прохождение без лишних экранов."
                             } else {
                                 "Выбран пользовательский набор. Его можно запустить отсюда или открыть раздел «Материалы» для редактирования."
                             },
@@ -145,38 +148,43 @@ fun MenuScreen(
                         }
 
                         SectionBlock(
-                            title = "Режим",
-                            body = "Основной режим соответствует конкурсному сценарию. Дополнительные режимы доступны, но не мешают главному пути."
+                            title = "Уровень",
+                            body = "Три уровня сложности с разным темпом восприятия материала."
                         ) {
-                            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                items(QuizMode.entries) { mode ->
-                                    val enabled = when {
-                                        !uiState.isOfficialPackSelected && mode != QuizMode.CLASSIC -> false
-                                        mode == QuizMode.LEGEND && !uiState.isLegendAvailable -> false
-                                        else -> true
-                                    }
-                                    FilterChip(
-                                        selected = uiState.selectedMode == mode,
-                                        onClick = { if (enabled) onModeSelected(mode) },
-                                        enabled = enabled,
-                                        label = { Text(text = mode.label()) },
-                                        modifier = Modifier.testTag(AuraNodeTestTags.modeTag(mode))
+                            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                items(Difficulty.entries) { difficulty ->
+                                    DifficultyRouteCard(
+                                        difficulty = difficulty,
+                                        selected = selectedDifficulty == difficulty,
+                                        onClick = { onDifficultySelected(difficulty) },
+                                        compact = true,
+                                        modifier = Modifier
+                                            .width(232.dp)
+                                            .testTag(AuraNodeTestTags.difficultyTag(difficulty))
                                     )
                                 }
                             }
                         }
 
                         SectionBlock(
-                            title = "Уровень",
-                            body = "Количество вопросов берётся из настроек и применяется ко всем маршрутам."
+                            title = "Режим",
+                            body = "Основной маршрут всегда остаётся главным сценарием, а дополнительные режимы подаются спокойнее."
                         ) {
-                            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                items(Difficulty.entries) { difficulty ->
-                                    FilterChip(
-                                        selected = selectedDifficulty == difficulty,
-                                        onClick = { onDifficultySelected(difficulty) },
-                                        label = { Text(text = difficulty.label()) },
-                                        modifier = Modifier.testTag(AuraNodeTestTags.difficultyTag(difficulty))
+                            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                items(QuizMode.entries) { mode ->
+                                    val enabled = when {
+                                        !uiState.isOfficialPackSelected && mode != QuizMode.CLASSIC -> false
+                                        mode == QuizMode.LEGEND && !uiState.isLegendAvailable -> false
+                                        else -> true
+                                    }
+                                    QuizModeCard(
+                                        mode = mode,
+                                        selected = uiState.selectedMode == mode,
+                                        enabled = enabled,
+                                        onClick = { if (enabled) onModeSelected(mode) },
+                                        modifier = Modifier
+                                            .width(260.dp)
+                                            .testTag(AuraNodeTestTags.modeTag(mode))
                                     )
                                 }
                             }
@@ -196,7 +204,7 @@ fun MenuScreen(
 
                     SecondaryActionCard(
                         title = "Карта Алтая",
-                        body = "Откройте точки региона и изучайте карту без перегружающих панелей.",
+                        body = "Точки региона, прогресс маршрута и фотографии объектов без перегружающих панелей.",
                         icon = {
                             Icon(
                                 imageVector = Icons.Outlined.Map,
@@ -224,7 +232,7 @@ fun MenuScreen(
 
                     SecondaryActionCard(
                         title = "Настройки",
-                        body = "Таймер, количество вопросов, темы, анимации и локальные данные приложения.",
+                        body = "Таймер, количество вопросов, анимации, звук и локальные данные приложения.",
                         icon = {
                             Icon(
                                 imageVector = Icons.Outlined.Settings,
@@ -238,7 +246,7 @@ fun MenuScreen(
 
                     SecondaryActionCard(
                         title = "Темы",
-                        body = "Оформление и фоновые сцены теперь собраны в отдельном разделе настроек.",
+                        body = "Отдельный экран с палитрами и фоновыми сценами для карты, викторины и карточки результата.",
                         icon = {
                             Icon(
                                 imageVector = Icons.Outlined.Palette,
@@ -246,7 +254,8 @@ fun MenuScreen(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         },
-                        onClick = onOpenSettings
+                        onClick = onOpenThemes,
+                        modifier = Modifier.testTag(AuraNodeTestTags.MENU_OPEN_THEMES)
                     )
                 }
             }
@@ -313,18 +322,6 @@ private fun SecondaryActionCard(
             }
         }
     }
-}
-
-private fun Difficulty.label(): String = when (this) {
-    Difficulty.CADET -> "Кадет"
-    Difficulty.ENGINEER -> "Инженер"
-    Difficulty.COSMONAUT -> "Космонавт"
-}
-
-private fun QuizMode.label(): String = when (this) {
-    QuizMode.CLASSIC -> "Основной"
-    QuizMode.SPRINT -> "Быстрый"
-    QuizMode.LEGEND -> "Углублённый"
 }
 
 @Composable

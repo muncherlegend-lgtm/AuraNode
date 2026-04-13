@@ -3,15 +3,18 @@ package com.example.newapp.ui.screens.atlas
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.AutoGraph
@@ -26,12 +29,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.newapp.data.model.AtlasNode
 import com.example.newapp.ui.AuraNodeTestTags
+import com.example.newapp.ui.atlas.AtlasNodePhotoRegistry
 import com.example.newapp.ui.atlas.AtlasPanelMode
 import com.example.newapp.ui.components.AtlasMapCard
 import com.example.newapp.ui.components.AuraFactChip
@@ -222,8 +230,28 @@ private fun AtlasNodeDetails(
     }
 
     val unlocked = unlockedNodeIds.contains(node.id)
+    val photo = AtlasNodePhotoRegistry.photoFor(node.id)
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        photo?.let {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Image(
+                    painter = painterResource(id = it.drawableRes),
+                    contentDescription = node.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(188.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .alpha(if (unlocked) 1f else 0.45f),
+                    contentScale = ContentScale.Crop
+                )
+                Text(
+                    text = "Фото: ${it.credit} • ${it.license}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
         AuraFactChip(
             text = if (unlocked) "Открыто" else "Пока закрыто",
             accent = if (unlocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,

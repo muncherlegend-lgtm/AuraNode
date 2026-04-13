@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -28,14 +28,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.newapp.ui.AuraNodeTestTags
 import com.example.newapp.ui.components.AuraNodeSurfaceCard
-import com.example.newapp.ui.components.ThemePresetCard
 import com.example.newapp.ui.quiz.QuizUiState
 
 @Composable
 fun SettingsScreen(
     uiState: QuizUiState,
     onBack: () -> Unit,
-    onThemeSelected: (String) -> Unit,
+    onOpenThemes: () -> Unit,
     onTimerEnabledChanged: (Boolean) -> Unit,
     onTimerSecondsChanged: (Int) -> Unit,
     onQuestionsCountChanged: (Int) -> Unit,
@@ -81,7 +80,7 @@ fun SettingsScreen(
                                     contentDescription = "Назад"
                                 )
                             }
-                            Column {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = "Настройки",
                                     style = MaterialTheme.typography.headlineSmall,
@@ -89,11 +88,23 @@ fun SettingsScreen(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "Таймер, оформление, параметры материалов и локальные данные.",
+                                    text = "Параметры прохождения, интерфейса и локальных данных приложения.",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
+                        }
+
+                        OutlinedButton(
+                            onClick = onOpenThemes,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            androidx.compose.material3.Icon(
+                                imageVector = Icons.Outlined.Palette,
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text(text = "Открыть темы")
                         }
                     }
                 }
@@ -135,7 +146,7 @@ fun SettingsScreen(
             }
 
             item {
-                SettingsSection(title = "Оформление") {
+                SettingsSection(title = "Интерфейс") {
                     ToggleRow(
                         title = "Компактный интерфейс",
                         body = "Уменьшает отступы и помогает на небольших экранах.",
@@ -164,28 +175,9 @@ fun SettingsScreen(
             }
 
             item {
-                SettingsSection(title = "Темы") {
-                    Text(
-                        text = "Оформление влияет и на карту, и на карточку результата при сохранении PNG.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        uiState.availableThemes.forEach { preset ->
-                            ThemePresetCard(
-                                preset = preset,
-                                selected = uiState.selectedThemeId == preset.id,
-                                onClick = { onThemeSelected(preset.id) }
-                            )
-                        }
-                    }
-                }
-            }
-
-            item {
                 SettingsSection(title = "Материалы") {
                     Text(
-                        text = "Импорт работает только локально: TXT, MD, PDF и DOCX. Число вопросов на уровень берётся из параметра выше.",
+                        text = "Импорт работает локально: TXT, MD, PDF и DOCX. Количество вопросов на уровень берётся из параметра выше.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -260,7 +252,7 @@ private fun ToggleRow(
                 )
                 Text(
                     text = body,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -269,7 +261,6 @@ private fun ToggleRow(
                 onCheckedChange = onCheckedChange
             )
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
     }
 }
 
@@ -280,29 +271,29 @@ private fun StepperRow(
     onDecrement: () -> Unit,
     onIncrement: () -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedButton(onClick = onDecrement) {
+                Text(text = "−")
+            }
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
             )
-        }
-        OutlinedButton(onClick = onDecrement) {
-            Text(text = "−")
-        }
-        OutlinedButton(onClick = onIncrement) {
-            Text(text = "+")
+            OutlinedButton(onClick = onIncrement) {
+                Text(text = "+")
+            }
         }
     }
 }
