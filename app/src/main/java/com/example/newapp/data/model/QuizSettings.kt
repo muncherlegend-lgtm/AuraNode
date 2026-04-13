@@ -5,12 +5,12 @@ data class QuizSettings(
     val autoAdvanceDelayMs: Long = DEFAULT_AUTO_ADVANCE_DELAY_MS,
     val showTimer: Boolean = true,
     val allowOptionSelection: Boolean = true,
-    val allowFreeTextAnswers: Boolean = true,
+    val allowFreeTextAnswers: Boolean = false,
     val compactUi: Boolean = true,
     val motionEnabled: Boolean = true,
     val hapticsEnabled: Boolean = true,
     val soundEnabled: Boolean = false,
-    val juryModeEnabled: Boolean = true,
+    val juryModeEnabled: Boolean = false,
     val demoResetOnLaunch: Boolean = false,
     val shuffleQuestions: Boolean = false,
     val shuffleOptions: Boolean = false,
@@ -20,12 +20,12 @@ data class QuizSettings(
     val defaultMode: QuizMode = QuizMode.CLASSIC,
     val answerMode: AnswerMode = AnswerMode.CLASSIC_OPTIONS,
     val homeContentPreference: HomeContentPreference = HomeContentPreference.OFFICIAL_FIRST,
-    val hasCompletedOnboarding: Boolean = false
+    val hasCompletedOnboarding: Boolean = true
 ) {
     companion object {
         const val DEFAULT_TIMER_SECONDS = 18
         const val DEFAULT_AUTO_ADVANCE_DELAY_MS = 1_700L
         const val DEFAULT_QUESTIONS_PER_DIFFICULTY = 5
-        const val DEFAULT_THEME_ID = "katun_dawn"
+        const val DEFAULT_THEME_ID = "katun"
     }
 }

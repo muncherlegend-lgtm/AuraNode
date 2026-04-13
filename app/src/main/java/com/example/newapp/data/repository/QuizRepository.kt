@@ -2,14 +2,15 @@ package com.example.newapp.data.repository
 
 import android.net.Uri
 import com.example.newapp.data.model.Achievement
-import com.example.newapp.data.model.AiGenerationConfig
 import com.example.newapp.data.model.AtlasNode
 import com.example.newapp.data.model.CloudGenerationMode
 import com.example.newapp.data.model.Difficulty
 import com.example.newapp.data.model.ImportedDocument
+import com.example.newapp.data.model.ImportedDocumentDraft
 import com.example.newapp.data.model.PlayerProgress
 import com.example.newapp.data.model.PackGenerationResult
 import com.example.newapp.data.model.Question
+import com.example.newapp.data.model.QuestionDraft
 import com.example.newapp.data.model.QuizPack
 import com.example.newapp.data.model.QuizPackSummary
 import com.example.newapp.data.model.QuizMode
@@ -35,9 +36,17 @@ interface QuizRepository {
         document: ImportedDocument,
         mode: CloudGenerationMode
     ): PackGenerationResult
+    suspend fun createImportedDraft(
+        document: ImportedDocument,
+        questionsPerDifficulty: Int
+    ): ImportedDocumentDraft
+    suspend fun rebuildImportedDraftQuestions(
+        draft: ImportedDocumentDraft,
+        questionsPerDifficulty: Int
+    ): List<QuestionDraft>
+    suspend fun saveImportedDraft(draft: ImportedDocumentDraft): QuizPack
     suspend fun deleteCustomPack(packId: String)
-    suspend fun getAiGenerationConfig(): AiGenerationConfig
-    suspend fun saveAiGenerationConfig(config: AiGenerationConfig)
+    suspend fun deleteAllCustomPacks()
     suspend fun getPlayerProgress(): PlayerProgress
     suspend fun saveSelectedTheme(themeId: String)
     suspend fun saveQuizSettings(settings: QuizSettings)

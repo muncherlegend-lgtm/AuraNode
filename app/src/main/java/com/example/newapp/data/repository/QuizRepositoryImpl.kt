@@ -2,27 +2,27 @@ package com.example.newapp.data.repository
 
 import android.net.Uri
 import com.example.newapp.data.model.Achievement
-import com.example.newapp.data.model.AiGenerationConfig
 import com.example.newapp.data.model.AtlasNode
 import com.example.newapp.data.model.CloudGenerationMode
 import com.example.newapp.data.model.Difficulty
 import com.example.newapp.data.model.ImportedDocument
+import com.example.newapp.data.model.ImportedDocumentDraft
 import com.example.newapp.data.model.PlayerProgress
 import com.example.newapp.data.model.PackGenerationResult
 import com.example.newapp.data.model.Question
+import com.example.newapp.data.model.QuestionDraft
 import com.example.newapp.data.model.QuizPack
 import com.example.newapp.data.model.QuizPackSummary
 import com.example.newapp.data.model.QuizMode
 import com.example.newapp.data.model.QuizSettings
 import com.example.newapp.data.model.RunSummary
 import com.example.newapp.data.model.ThemePreset
-import com.example.newapp.data.source.CloudQuizPackGenerator
 import com.example.newapp.data.source.DocumentImportDataSource
-import com.example.newapp.data.source.GeneratedPackMerger
 import com.example.newapp.data.source.LocalQuizDataSource
 import com.example.newapp.data.source.QuizConfigParser
 import com.example.newapp.data.source.QuizPackStorageDataSource
 import com.example.newapp.data.source.QuizPreferencesDataSource
+import com.example.newapp.domain.usecase.ImportedDraftFactory
 import com.example.newapp.domain.usecase.OfflineQuizPackGenerator
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,9 +33,8 @@ class QuizRepositoryImpl @Inject constructor(
     private val quizPreferencesDataSource: QuizPreferencesDataSource,
     private val quizPackStorageDataSource: QuizPackStorageDataSource,
     private val documentImportDataSource: DocumentImportDataSource,
-    private val cloudQuizPackGenerator: CloudQuizPackGenerator,
     private val offlineQuizPackGenerator: OfflineQuizPackGenerator,
-    private val generatedPackMerger: GeneratedPackMerger
+    private val importedDraftFactory: ImportedDraftFactory
 ) : QuizRepository {
 
     private val packCache = linkedMapOf<String, QuizPack>()
@@ -105,31 +104,42 @@ class QuizRepositoryImpl @Inject constructor(
         mode: CloudGenerationMode
     ): PackGenerationResult {
         val settings = getQuizSettings()
-        val offlinePack = offlineQuizPackGenerator.generate(document, settings.questionsPerDifficulty)
-        val aiConfig = quizPreferencesDataSource.readAiGenerationConfig()
-        val cloudResult = if (
-            mode == CloudGenerationMode.CLOUD_PREFERRED &&
-            aiConfig.cloudGenerationEnabled &&
-            aiConfig.apiKey.isNotBlank()
-        ) {
-            runCatching {
-                cloudQuizPackGenerator.generate(document, aiConfig, settings.questionsPerDifficulty)
-            }
-        } else {
-            null
-        }
-
-        val generationResult = generatedPackMerger.mergeWithOfflineFallback(
-            cloudPack = cloudResult?.getOrNull(),
-            offlinePack = offlinePack,
+        val generatedPack = offlineQuizPackGenerator.generate(
             document = document,
-            questionsPerDifficulty = settings.questionsPerDifficulty,
-            cloudFailure = cloudResult?.exceptionOrNull()
+            questionsPerDifficulty = settings.questionsPerDifficulty
+        )
+        val generationResult = PackGenerationResult(
+            pack = generatedPack,
+            usedCloudGeneration = false,
+            warnings = when (mode) {
+                CloudGenerationMode.CLOUD_PREFERRED -> listOf(
+                    "Облачная генерация отключена: использован локальный конструктор."
+                )
+                CloudGenerationMode.OFFLINE_ONLY -> emptyList()
+            }
         )
         val serializedPack = QuizConfigParser.serializeQuizPack(generationResult.pack)
         quizPackStorageDataSource.saveCustomPack(serializedPack, generationResult.pack.id)
         packCache[generationResult.pack.id] = generationResult.pack
         return generationResult
+    }
+
+    override suspend fun createImportedDraft(
+        document: ImportedDocument,
+        questionsPerDifficulty: Int
+    ): ImportedDocumentDraft = importedDraftFactory.createDraft(document, questionsPerDifficulty)
+
+    override suspend fun rebuildImportedDraftQuestions(
+        draft: ImportedDocumentDraft,
+        questionsPerDifficulty: Int
+    ): List<QuestionDraft> = importedDraftFactory.rebuildQuestions(draft, questionsPerDifficulty)
+
+    override suspend fun saveImportedDraft(draft: ImportedDocumentDraft): QuizPack {
+        val pack = importedDraftFactory.buildPack(draft)
+        val serializedPack = QuizConfigParser.serializeQuizPack(pack)
+        quizPackStorageDataSource.saveCustomPack(serializedPack, pack.id)
+        packCache[pack.id] = pack
+        return pack
     }
 
     override suspend fun deleteCustomPack(packId: String) {
@@ -138,11 +148,11 @@ class QuizRepositoryImpl @Inject constructor(
         packCache.remove(packId)
     }
 
-    override suspend fun getAiGenerationConfig(): AiGenerationConfig =
-        quizPreferencesDataSource.readAiGenerationConfig()
-
-    override suspend fun saveAiGenerationConfig(config: AiGenerationConfig) {
-        quizPreferencesDataSource.saveAiGenerationConfig(config)
+    override suspend fun deleteAllCustomPacks() {
+        quizPackStorageDataSource.loadAllCustomPacks().forEach { pack ->
+            quizPackStorageDataSource.deleteCustomPack(pack.id)
+            packCache.remove(pack.id)
+        }
     }
 
     override suspend fun getPlayerProgress(): PlayerProgress =

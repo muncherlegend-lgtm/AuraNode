@@ -40,7 +40,7 @@ class LocalQuizDataSource @Inject constructor(
         val questions = getQuestions()
         return QuizPack(
             id = QuizPack.OFFICIAL_ALTAI_PACK_ID,
-            title = "Altai Expedition",
+            title = "Алтайский маршрут",
             description = "Официальная офлайн-викторина об Алтайском крае и Барнауле.",
             type = QuizPackType.OFFICIAL_ALTAI,
             generationSource = PackGenerationSource.OFFICIAL,

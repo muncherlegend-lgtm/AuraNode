@@ -2,48 +2,48 @@
   "achievements": [
     {
       "id": "perfect_run",
-      "title": "Безупречный маршрут",
-      "description": "Пройти любой уровень без ошибок.",
+      "title": "Без ошибок",
+      "description": "Пройти любой уровень без единой ошибки.",
       "iconName": "military_tech",
       "ruleType": "PERFECT_RUN",
       "threshold": 1
     },
     {
       "id": "no_timeouts",
-      "title": "Ритм экспедиции",
-      "description": "Завершить забег без единого таймаута.",
+      "title": "Без тайм-аутов",
+      "description": "Завершить прохождение без истечения времени.",
       "iconName": "timer",
       "ruleType": "NO_TIMEOUTS",
       "threshold": 1
     },
     {
       "id": "streak_5",
-      "title": "Серия исследователя",
-      "description": "Собрать серию из 5 правильных ответов подряд.",
+      "title": "Серия из пяти",
+      "description": "Дать пять правильных ответов подряд.",
       "iconName": "whatshot",
       "ruleType": "STREAK",
       "threshold": 5
     },
     {
       "id": "atlas_master",
-      "title": "Хранитель Атласа",
-      "description": "Открыть все ключевые точки Алтайского атласа.",
+      "title": "Карта открыта",
+      "description": "Открыть все ключевые точки карты Алтая.",
       "iconName": "public",
       "ruleType": "ATLAS_NODES",
       "threshold": 8
     },
     {
       "id": "theme_nomad",
-      "title": "Коллекционер тем",
+      "title": "Коллекция тем",
       "description": "Попробовать все темы оформления.",
       "iconName": "palette",
       "ruleType": "ALL_THEMES_TRIED",
-      "threshold": 5
+      "threshold": 6
     },
     {
       "id": "legend_clear",
-      "title": "Легенда Алтая",
-      "description": "Успешно завершить режим Legend.",
+      "title": "Углублённый режим",
+      "description": "Успешно завершить режим «Углублённый».",
       "iconName": "auto_awesome",
       "ruleType": "LEGEND_CLEAR",
       "threshold": 1

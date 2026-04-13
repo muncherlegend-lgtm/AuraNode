@@ -8,12 +8,12 @@
   "motionEnabled": true,
   "hapticsEnabled": true,
   "soundEnabled": false,
-  "juryModeEnabled": true,
+  "juryModeEnabled": false,
   "demoResetOnLaunch": false,
   "shuffleQuestions": false,
   "shuffleOptions": false,
   "questionsPerDifficulty": 5,
-  "defaultThemeId": "katun_dawn",
+  "defaultThemeId": "katun",
   "defaultMode": "CLASSIC",
   "answerMode": "CLASSIC_OPTIONS"
 }

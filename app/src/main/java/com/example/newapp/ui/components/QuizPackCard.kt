@@ -38,18 +38,18 @@ fun QuizPackCard(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 AuraFactChip(
                     text = if (pack.type == QuizPackType.OFFICIAL_ALTAI) {
-                        "Official"
+                        "Основной набор"
                     } else {
-                        "My Pack"
+                        "Пользовательский набор"
                     },
                     accent = MaterialTheme.colorScheme.primary,
                     compact = true
                 )
                 AuraFactChip(
                     text = when (pack.generationSource) {
-                        PackGenerationSource.OFFICIAL -> "Atlas"
-                        PackGenerationSource.CLOUD_AI -> "AI"
-                        PackGenerationSource.OFFLINE_DRAFT -> "Offline Draft"
+                        PackGenerationSource.OFFICIAL -> "Встроенный"
+                        PackGenerationSource.CLOUD_AI -> "Пользовательский"
+                        PackGenerationSource.OFFLINE_DRAFT -> "Локальный"
                     },
                     accent = MaterialTheme.colorScheme.secondary,
                     compact = true
@@ -92,7 +92,7 @@ fun QuizPackCard(
                     onClick = onClick,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = if (selected) "Выбран" else "Выбрать")
+                    Text(text = if (selected) "Выбран" else "Открыть")
                 }
                 if (onDelete != null) {
                     OutlinedButton(

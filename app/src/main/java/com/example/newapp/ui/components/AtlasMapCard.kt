@@ -49,7 +49,6 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -57,7 +56,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.example.newapp.R
 import com.example.newapp.data.model.AtlasNode
 import com.example.newapp.data.model.FactCategory
 import kotlin.math.hypot
@@ -346,7 +344,7 @@ fun AtlasMapCard(
         }
 
         MapBadge(
-            text = stringResource(R.string.atlas_map_hint),
+            text = "Жесты: перемещайте карту, масштабируйте и нажимайте на точки",
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(16.dp)
@@ -361,7 +359,7 @@ fun AtlasMapCard(
         ) {
             androidx.compose.material3.Icon(
                 imageVector = Icons.Outlined.CenterFocusStrong,
-                contentDescription = stringResource(R.string.atlas_reset_view)
+                contentDescription = "Сбросить обзор"
             )
         }
     }

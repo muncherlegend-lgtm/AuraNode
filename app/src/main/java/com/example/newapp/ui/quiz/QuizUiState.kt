@@ -1,10 +1,10 @@
 package com.example.newapp.ui.quiz
 
 import com.example.newapp.data.model.Achievement
-import com.example.newapp.data.model.AiGenerationConfig
 import com.example.newapp.data.model.AtlasNode
 import com.example.newapp.data.model.Difficulty
 import com.example.newapp.data.model.ImportedDocument
+import com.example.newapp.data.model.ImportedDocumentDraft
 import com.example.newapp.data.model.MedalTier
 import com.example.newapp.data.model.PlayerProgress
 import com.example.newapp.data.model.Question
@@ -19,7 +19,7 @@ import com.example.newapp.ui.atlas.AtlasPanelMode
 
 data class QuizUiState(
     val isLoading: Boolean = true,
-    val selectedDifficulty: Difficulty? = null,
+    val selectedDifficulty: Difficulty? = Difficulty.CADET,
     val selectedMode: QuizMode = QuizMode.CLASSIC,
     val questions: List<Question> = emptyList(),
     val currentQuestionIndex: Int = 0,
@@ -36,19 +36,16 @@ data class QuizUiState(
     val isAnswerLocked: Boolean = false,
     val answerFeedbackType: AnswerFeedbackType? = null,
     val timerSecondsLeft: Int = QuizSettings.DEFAULT_TIMER_SECONDS,
-    val answerInput: String = "",
-    val submittedAnswerText: String? = null,
     val quizSettings: QuizSettings = QuizSettings(),
     val availableThemes: List<ThemePreset> = emptyList(),
     val selectedThemeId: String = QuizSettings.DEFAULT_THEME_ID,
     val quizPacks: List<QuizPackSummary> = emptyList(),
     val selectedPackId: String = QuizPack.OFFICIAL_ALTAI_PACK_ID,
     val importedDocumentPreview: ImportedDocument? = null,
+    val importedDraft: ImportedDocumentDraft? = null,
     val isGeneratingPack: Boolean = false,
     val generationWarnings: List<String> = emptyList(),
     val generationErrorMessage: String? = null,
-    val aiGenerationConfig: AiGenerationConfig = AiGenerationConfig(),
-    val isAiConsentSheetVisible: Boolean = false,
     val atlasNodes: List<AtlasNode> = emptyList(),
     val achievements: List<Achievement> = emptyList(),
     val playerProgress: PlayerProgress = PlayerProgress(),
@@ -59,7 +56,7 @@ data class QuizUiState(
     val selectedAtlasNodeId: String? = null,
     val latestUnlockedAtlasNodeId: String? = null,
     val atlasFocusRequestId: Long = 0L,
-    val atlasPanelMode: AtlasPanelMode = AtlasPanelMode.NODE_DETAILS
+    val atlasPanelMode: AtlasPanelMode = AtlasPanelMode.HIDDEN
 ) {
     val currentQuestion: Question?
         get() = questions.getOrNull(currentQuestionIndex)
@@ -108,12 +105,6 @@ data class QuizUiState(
 
     val isOfficialPackSelected: Boolean
         get() = selectedPack?.type != QuizPackType.CUSTOM_IMPORTED
-
-    val shouldShowOnboarding: Boolean
-        get() = !isLoading && !quizSettings.hasCompletedOnboarding
-
-    val cloudGenerationReady: Boolean
-        get() = aiGenerationConfig.cloudGenerationEnabled && aiGenerationConfig.apiKey.isNotBlank()
 
     companion object {
         const val POINTS_PER_CORRECT = 10

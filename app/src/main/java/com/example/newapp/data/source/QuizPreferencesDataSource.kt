@@ -13,11 +13,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.newapp.data.model.AnswerMode
-import com.example.newapp.data.model.AiGenerationConfig
-import com.example.newapp.data.model.AiProvider
 import com.example.newapp.data.model.Difficulty
-import com.example.newapp.data.model.HomeContentPreference
 import com.example.newapp.data.model.MedalTier
 import com.example.newapp.data.model.PackGenerationSource
 import com.example.newapp.data.model.PlayerProgress
@@ -41,8 +37,7 @@ private val Context.quizPreferencesDataStore by preferencesDataStore(
 )
 
 class QuizPreferencesDataSource @Inject constructor(
-    @param:ApplicationContext private val context: Context,
-    private val secureValueCipher: SecureValueCipher
+    @param:ApplicationContext private val context: Context
 ) {
 
     suspend fun readMergedSettings(defaults: QuizSettings): QuizSettings {
@@ -83,47 +78,19 @@ class QuizPreferencesDataSource @Inject constructor(
 
     suspend fun saveUserSettings(settings: QuizSettings) {
         context.quizPreferencesDataStore.edit { preferences ->
+            preferences[Keys.TIMER_SECONDS] = settings.timerSeconds
+            preferences[Keys.AUTO_ADVANCE_DELAY_MS] = settings.autoAdvanceDelayMs
             preferences[Keys.SHOW_TIMER] = settings.showTimer
             preferences[Keys.COMPACT_UI] = settings.compactUi
             preferences[Keys.MOTION_ENABLED] = settings.motionEnabled
             preferences[Keys.HAPTICS_ENABLED] = settings.hapticsEnabled
             preferences[Keys.SOUND_ENABLED] = settings.soundEnabled
-            preferences[Keys.JURY_MODE_ENABLED] = settings.juryModeEnabled
-            preferences[Keys.DEMO_RESET_ON_LAUNCH] = settings.demoResetOnLaunch
+            preferences[Keys.SHUFFLE_QUESTIONS] = settings.shuffleQuestions
+            preferences[Keys.SHUFFLE_OPTIONS] = settings.shuffleOptions
+            preferences[Keys.QUESTIONS_PER_DIFFICULTY] = settings.questionsPerDifficulty
             preferences[Keys.DEFAULT_MODE] = settings.defaultMode.name
-            preferences[Keys.ANSWER_MODE] = settings.answerMode.name
             preferences[Keys.SELECTED_THEME_ID] = settings.defaultThemeId
             preferences[Keys.DEFAULT_PACK_ID] = settings.defaultPackId
-            preferences[Keys.HOME_CONTENT_PREFERENCE] = settings.homeContentPreference.name
-            preferences[Keys.HAS_COMPLETED_ONBOARDING] = settings.hasCompletedOnboarding
-        }
-    }
-
-    suspend fun readAiGenerationConfig(): AiGenerationConfig {
-        val preferences = safePreferences()
-        return AiGenerationConfig(
-            provider = preferences[Keys.AI_PROVIDER]
-                ?.let(::parseAiProvider)
-                ?: AiGenerationConfig().provider,
-            apiKey = secureValueCipher.decrypt(preferences[Keys.AI_API_KEY].orEmpty()),
-            cloudGenerationEnabled = preferences[Keys.AI_CLOUD_ENABLED]
-                ?: AiGenerationConfig().cloudGenerationEnabled,
-            hasCloudConsent = preferences[Keys.AI_HAS_CLOUD_CONSENT]
-                ?: AiGenerationConfig().hasCloudConsent,
-            geminiModel = preferences[Keys.AI_GEMINI_MODEL]
-                ?: AiGenerationConfig.DEFAULT_GEMINI_MODEL,
-            openRouterModel = preferences[Keys.AI_OPENROUTER_MODEL].orEmpty()
-        )
-    }
-
-    suspend fun saveAiGenerationConfig(config: AiGenerationConfig) {
-        context.quizPreferencesDataStore.edit { preferences ->
-            preferences[Keys.AI_PROVIDER] = config.provider.name
-            preferences[Keys.AI_API_KEY] = secureValueCipher.encrypt(config.apiKey)
-            preferences[Keys.AI_CLOUD_ENABLED] = config.cloudGenerationEnabled
-            preferences[Keys.AI_HAS_CLOUD_CONSENT] = config.hasCloudConsent
-            preferences[Keys.AI_GEMINI_MODEL] = config.geminiModel
-            preferences[Keys.AI_OPENROUTER_MODEL] = config.openRouterModel
         }
     }
 
@@ -165,13 +132,17 @@ class QuizPreferencesDataSource @Inject constructor(
         preferences: Preferences,
         defaults: QuizSettings
     ): QuizSettings = defaults.copy(
+        timerSeconds = preferences[Keys.TIMER_SECONDS] ?: defaults.timerSeconds,
+        autoAdvanceDelayMs = preferences[Keys.AUTO_ADVANCE_DELAY_MS] ?: defaults.autoAdvanceDelayMs,
         showTimer = preferences[Keys.SHOW_TIMER] ?: defaults.showTimer,
         compactUi = preferences[Keys.COMPACT_UI] ?: defaults.compactUi,
         motionEnabled = preferences[Keys.MOTION_ENABLED] ?: defaults.motionEnabled,
         hapticsEnabled = preferences[Keys.HAPTICS_ENABLED] ?: defaults.hapticsEnabled,
         soundEnabled = preferences[Keys.SOUND_ENABLED] ?: defaults.soundEnabled,
-        juryModeEnabled = preferences[Keys.JURY_MODE_ENABLED] ?: defaults.juryModeEnabled,
-        demoResetOnLaunch = preferences[Keys.DEMO_RESET_ON_LAUNCH] ?: defaults.demoResetOnLaunch,
+        shuffleQuestions = preferences[Keys.SHUFFLE_QUESTIONS] ?: defaults.shuffleQuestions,
+        shuffleOptions = preferences[Keys.SHUFFLE_OPTIONS] ?: defaults.shuffleOptions,
+        questionsPerDifficulty = preferences[Keys.QUESTIONS_PER_DIFFICULTY]
+            ?: defaults.questionsPerDifficulty,
         defaultThemeId = preferences[Keys.SELECTED_THEME_ID] ?: defaults.defaultThemeId,
         defaultPackId = preferences[Keys.DEFAULT_PACK_ID] ?: defaults.defaultPackId,
         defaultMode = preferences[Keys.DEFAULT_MODE]
@@ -183,26 +154,6 @@ class QuizPreferencesDataSource @Inject constructor(
                 }
             }
             ?: defaults.defaultMode,
-        answerMode = preferences[Keys.ANSWER_MODE]
-            ?.let { rawValue ->
-                parseAnswerMode(rawValue).also {
-                    if (it.name != rawValue) {
-                        Log.w(TAG, "Unknown saved answer mode '$rawValue'. Falling back to ${it.name}.")
-                    }
-                }
-            }
-            ?: defaults.answerMode,
-        homeContentPreference = preferences[Keys.HOME_CONTENT_PREFERENCE]
-            ?.let { rawValue ->
-                parseHomeContentPreference(rawValue).also {
-                    if (it.name != rawValue) {
-                        Log.w(TAG, "Unknown home preference '$rawValue'. Falling back to ${it.name}.")
-                    }
-                }
-            }
-            ?: defaults.homeContentPreference,
-        hasCompletedOnboarding = preferences[Keys.HAS_COMPLETED_ONBOARDING]
-            ?: defaults.hasCompletedOnboarding
     )
 
     private fun MutablePreferences.clearProgress() {
@@ -289,18 +240,6 @@ class QuizPreferencesDataSource @Inject constructor(
         QuizMode.valueOf(rawValue.ifBlank { QuizMode.CLASSIC.name })
     }.getOrDefault(QuizMode.CLASSIC)
 
-    private fun parseAnswerMode(rawValue: String): AnswerMode = runCatching {
-        AnswerMode.valueOf(rawValue.ifBlank { AnswerMode.CLASSIC_OPTIONS.name })
-    }.getOrDefault(AnswerMode.CLASSIC_OPTIONS)
-
-    private fun parseHomeContentPreference(rawValue: String): HomeContentPreference = runCatching {
-        HomeContentPreference.valueOf(rawValue.ifBlank { HomeContentPreference.OFFICIAL_FIRST.name })
-    }.getOrDefault(HomeContentPreference.OFFICIAL_FIRST)
-
-    private fun parseAiProvider(rawValue: String): AiProvider = runCatching {
-        AiProvider.valueOf(rawValue.ifBlank { AiGenerationConfig().provider.name })
-    }.getOrDefault(AiGenerationConfig().provider)
-
     private fun parseDifficulty(rawValue: String): Difficulty = runCatching {
         Difficulty.valueOf(rawValue.ifBlank { Difficulty.CADET.name })
     }.getOrDefault(Difficulty.CADET)
@@ -311,31 +250,23 @@ class QuizPreferencesDataSource @Inject constructor(
 
     private object Keys {
         val SELECTED_THEME_ID = stringPreferencesKey("selected_theme_id")
+        val TIMER_SECONDS = intPreferencesKey("timer_seconds")
+        val AUTO_ADVANCE_DELAY_MS = longPreferencesKey("auto_advance_delay_ms")
         val SHOW_TIMER = booleanPreferencesKey("show_timer")
         val COMPACT_UI = booleanPreferencesKey("compact_ui")
         val MOTION_ENABLED = booleanPreferencesKey("motion_enabled")
         val HAPTICS_ENABLED = booleanPreferencesKey("haptics_enabled")
         val SOUND_ENABLED = booleanPreferencesKey("sound_enabled")
-        val JURY_MODE_ENABLED = booleanPreferencesKey("jury_mode_enabled")
-        val DEMO_RESET_ON_LAUNCH = booleanPreferencesKey("demo_reset_on_launch")
+        val SHUFFLE_QUESTIONS = booleanPreferencesKey("shuffle_questions")
+        val SHUFFLE_OPTIONS = booleanPreferencesKey("shuffle_options")
+        val QUESTIONS_PER_DIFFICULTY = intPreferencesKey("questions_per_difficulty")
         val DEFAULT_MODE = stringPreferencesKey("default_mode")
-        val ANSWER_MODE = stringPreferencesKey("answer_mode")
         val DEFAULT_PACK_ID = stringPreferencesKey("default_pack_id")
-        val HOME_CONTENT_PREFERENCE = stringPreferencesKey("home_content_preference")
-        val HAS_COMPLETED_ONBOARDING = booleanPreferencesKey("has_completed_onboarding")
-        val AI_PROVIDER = stringPreferencesKey("ai_provider")
-        val AI_API_KEY = stringPreferencesKey("ai_api_key")
-        val AI_CLOUD_ENABLED = booleanPreferencesKey("ai_cloud_enabled")
-        val AI_HAS_CLOUD_CONSENT = booleanPreferencesKey("ai_has_cloud_consent")
-        val AI_GEMINI_MODEL = stringPreferencesKey("ai_gemini_model")
-        val AI_OPENROUTER_MODEL = stringPreferencesKey("ai_openrouter_model")
         val UNLOCKED_ATLAS_NODES = stringSetPreferencesKey("unlocked_atlas_nodes")
         val UNLOCKED_ACHIEVEMENTS = stringSetPreferencesKey("unlocked_achievements")
         val DISCOVERED_THEMES = stringSetPreferencesKey("discovered_themes")
         val BEST_RUNS_JSON = stringPreferencesKey("best_runs_json")
         val LATEST_RUN_JSON = stringPreferencesKey("latest_run_json")
-        val TOTAL_RUNS = intPreferencesKey("total_runs")
-        val LAST_PLAYED_AT = longPreferencesKey("last_played_at")
     }
 
     private companion object {
