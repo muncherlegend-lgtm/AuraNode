@@ -51,6 +51,7 @@ AuraNode is an Android quiz app about Altai Krai and Barnaul, built with Kotlin 
 - Release APK: `app/build/outputs/apk/release/app-release.apk`
 - Config assets: `app/src/main/assets/config/`
 - Import samples: `deliverables/import-samples/`
+- Project guide: `deliverables/PROJECT_GUIDE.md`
 - Manual test guide: `deliverables/MANUAL_TEST_GUIDE.md`
 
 ## Build
