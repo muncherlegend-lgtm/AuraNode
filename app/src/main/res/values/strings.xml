@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">AuraNode</string>
+    <string name="app_name">Маршрут Алтая</string>
 
     <string name="menu_location_label">Алтайский край · Барнаул</string>
-    <string name="menu_title">AuraNode</string>
+    <string name="menu_title">Маршрут Алтая</string>
     <string name="startup_loading_message">Подготавливаем офлайн-экспедицию и восстанавливаем безопасные настройки запуска.</string>
     <string name="menu_subtitle">Премиальная викторина-путешествие по Алтаю: факты, маршруты и редкие детали региона в трёх уровнях сложности.</string>
     <string name="menu_promise_title">Маршрут начинается здесь</string>

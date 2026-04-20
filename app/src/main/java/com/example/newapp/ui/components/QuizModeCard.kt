@@ -2,6 +2,8 @@ package com.example.newapp.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.example.newapp.R
 import com.example.newapp.data.model.QuizMode
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun QuizModeCard(
     mode: QuizMode,
@@ -68,7 +71,7 @@ fun QuizModeCard(
                     modifier = Modifier.size(22.dp)
                 )
                 Text(
-                    text = stringResource(presentation.titleRes),
+                    text = presentation.title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -76,13 +79,27 @@ fun QuizModeCard(
             }
             Text(
                 text = if (enabled) {
-                    stringResource(presentation.bodyRes)
+                    presentation.body
                 } else {
                     stringResource(R.string.mode_legend_locked_body)
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            if (enabled) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    presentation.highlights.forEach { label ->
+                        AuraFactChip(
+                            text = label,
+                            accent = presentation.accent,
+                            compact = true
+                        )
+                    }
+                }
+            }
             if (selected) {
                 AuraFactChip(
                     text = stringResource(R.string.mode_active_label),

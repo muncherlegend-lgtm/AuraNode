@@ -1,4 +1,4 @@
-# AuraNode Project Guide
+# Маршрут Алтая Project Guide
 
 ## 1. Что это за проект
 

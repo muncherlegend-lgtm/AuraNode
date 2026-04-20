@@ -24,6 +24,7 @@ import android.text.TextUtils
 import androidx.core.content.FileProvider
 import com.example.newapp.data.model.RunSummary
 import com.example.newapp.data.model.ThemePreset
+import com.example.newapp.ui.copy.APP_NAME
 import java.io.File
 import java.io.FileOutputStream
 
@@ -61,7 +62,7 @@ object ResultShareManager {
             putExtra(Intent.EXTRA_STREAM, shareUri)
             putExtra(Intent.EXTRA_TEXT, content.toShareText())
             putExtra(Intent.EXTRA_SUBJECT, "${content.packCategory}: ${content.scoreLabel}")
-            clipData = ClipData.newUri(context.contentResolver, "Результат AuraNode", shareUri)
+            clipData = ClipData.newUri(context.contentResolver, "Результат $APP_NAME", shareUri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         context.startActivity(Intent.createChooser(intent, "Поделиться результатом"))
@@ -74,7 +75,8 @@ object ResultShareManager {
         highlightFact: String
     ): Result<Uri> = runCatching {
         val bitmap = renderCardBitmap(runSummary, themePreset, highlightFact)
-        val fileName = "auranode-result-${runSummary.timestamp}.png"
+        val safeName = APP_NAME.lowercase().replace(' ', '-')
+        val fileName = "$safeName-result-${runSummary.timestamp}.png"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             saveToMediaStore(context, bitmap, fileName)
         } else {
@@ -106,7 +108,7 @@ object ResultShareManager {
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
             put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-            put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/AuraNode")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/$APP_NAME")
             put(MediaStore.Images.Media.IS_PENDING, 1)
         }
         val resolver = context.contentResolver
@@ -125,7 +127,7 @@ object ResultShareManager {
     private fun saveToExternalFiles(context: Context, bitmap: Bitmap, fileName: String): Uri {
         val picturesDir = File(
             context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-            "AuraNode"
+            APP_NAME
         ).apply { mkdirs() }
         val outputFile = File(picturesDir, fileName)
         FileOutputStream(outputFile).use { stream ->
@@ -166,29 +168,12 @@ object ResultShareManager {
             backgroundPaint
         )
 
-        drawAmbientGlow(
-            canvas = canvas,
-            centerX = CARD_WIDTH * 0.86f,
-            centerY = CARD_HEIGHT * 0.15f,
-            radius = CARD_WIDTH * 0.34f,
-            color = palette.glow
-        )
-        drawAmbientGlow(
-            canvas = canvas,
-            centerX = CARD_WIDTH * 0.14f,
-            centerY = CARD_HEIGHT * 0.84f,
-            radius = CARD_WIDTH * 0.30f,
-            color = palette.glowSecondary
-        )
+        drawAmbientGlow(canvas, CARD_WIDTH * 0.86f, CARD_HEIGHT * 0.15f, CARD_WIDTH * 0.34f, palette.glow)
+        drawAmbientGlow(canvas, CARD_WIDTH * 0.14f, CARD_HEIGHT * 0.84f, CARD_WIDTH * 0.30f, palette.glowSecondary)
 
         val contentRect = RectF(64f, 88f, CARD_WIDTH - 64f, CARD_HEIGHT - 88f)
         canvas.drawRoundRect(
-            RectF(
-                contentRect.left,
-                contentRect.top + 16f,
-                contentRect.right,
-                contentRect.bottom + 16f
-            ),
+            RectF(contentRect.left, contentRect.top + 16f, contentRect.right, contentRect.bottom + 16f),
             46f,
             46f,
             Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x21000000 }
@@ -243,58 +228,37 @@ object ResultShareManager {
 
         drawPill(
             canvas = canvas,
-            rect = RectF(116f, 138f, 314f, 196f),
+            rect = RectF(116f, 138f, 400f, 196f),
             backgroundColor = palette.accentSoft,
             textColor = palette.accent,
-            label = "AURANODE"
+            label = APP_NAME
         )
         drawPill(
             canvas = canvas,
-            rect = RectF(774f, 138f, 1048f, 196f),
+            rect = RectF(774f, 138f, 1084f, 196f),
             backgroundColor = palette.secondarySoft,
             textColor = palette.secondary,
             label = content.verdictLabel
         )
 
         var currentY = 234f
-        currentY = drawTextBlock(
-            canvas = canvas,
-            text = content.packCategory,
-            paint = sectionPaint,
-            x = 116f,
-            y = currentY,
-            width = 620,
-            maxLines = 1
-        ) + 14f
-        currentY = drawTextBlock(
-            canvas = canvas,
-            text = content.packTitle,
-            paint = serifDisplay,
-            x = 116f,
-            y = currentY,
-            width = 790,
-            maxLines = 2
-        ) + 26f
+        currentY = drawTextBlock(canvas, content.packCategory, sectionPaint, 116f, currentY, 620, 1) + 14f
+        currentY = drawTextBlock(canvas, content.packTitle, serifDisplay, 116f, currentY, 790, 2) + 26f
 
         val modeChipWidth = measurePillWidth(labelPaint, content.modeLabel)
         drawPill(
-            canvas = canvas,
-            rect = RectF(116f, currentY, 116f + modeChipWidth, currentY + 58f),
-            backgroundColor = palette.accentSoft,
-            textColor = palette.accent,
-            label = content.modeLabel
+            canvas,
+            RectF(116f, currentY, 116f + modeChipWidth, currentY + 58f),
+            palette.accentSoft,
+            palette.accent,
+            content.modeLabel
         )
         drawPill(
-            canvas = canvas,
-            rect = RectF(
-                132f + modeChipWidth,
-                currentY,
-                132f + modeChipWidth + measurePillWidth(labelPaint, content.difficultyLabel),
-                currentY + 58f
-            ),
-            backgroundColor = palette.secondarySoft,
-            textColor = palette.secondary,
-            label = content.difficultyLabel
+            canvas,
+            RectF(132f + modeChipWidth, currentY, 132f + modeChipWidth + measurePillWidth(labelPaint, content.difficultyLabel), currentY + 58f),
+            palette.secondarySoft,
+            palette.secondary,
+            content.difficultyLabel
         )
 
         val scoreRect = RectF(116f, currentY + 84f, 1084f, currentY + 364f)
@@ -314,42 +278,10 @@ object ResultShareManager {
                 )
             }
         )
-        drawTextBlock(
-            canvas = canvas,
-            text = "Итоговый счёт",
-            paint = labelPaint,
-            x = scoreRect.left + 40f,
-            y = scoreRect.top + 34f,
-            width = 400,
-            maxLines = 1
-        )
-        drawTextBlock(
-            canvas = canvas,
-            text = content.scoreLabel,
-            paint = scorePaint,
-            x = scoreRect.left + 40f,
-            y = scoreRect.top + 86f,
-            width = 640,
-            maxLines = 1
-        )
-        drawTextBlock(
-            canvas = canvas,
-            text = content.accuracyLabel,
-            paint = bodyPaint,
-            x = scoreRect.left + 40f,
-            y = scoreRect.top + 214f,
-            width = 420,
-            maxLines = 1
-        )
-        drawTextBlock(
-            canvas = canvas,
-            text = "${content.modeLabel} • ${content.difficultyLabel}",
-            paint = bodyPaint,
-            x = scoreRect.left + 40f,
-            y = scoreRect.top + 260f,
-            width = 520,
-            maxLines = 1
-        )
+        drawTextBlock(canvas, "Итоговый счёт", labelPaint, scoreRect.left + 40f, scoreRect.top + 34f, 400, 1)
+        drawTextBlock(canvas, content.scoreLabel, scorePaint, scoreRect.left + 40f, scoreRect.top + 86f, 640, 1)
+        drawTextBlock(canvas, content.accuracyLabel, bodyPaint, scoreRect.left + 40f, scoreRect.top + 214f, 420, 1)
+        drawTextBlock(canvas, "${content.modeLabel} • ${content.difficultyLabel}", bodyPaint, scoreRect.left + 40f, scoreRect.top + 260f, 520, 1)
 
         val statsTop = scoreRect.bottom + 30f
         drawMetricPanel(
@@ -378,44 +310,12 @@ object ResultShareManager {
             34f,
             Paint(Paint.ANTI_ALIAS_FLAG).apply { color = palette.accentSoft }
         )
-        drawTextBlock(
-            canvas = canvas,
-            text = "Что запомнилось",
-            paint = labelPaint,
-            x = highlightRect.left + 34f,
-            y = highlightRect.top + 30f,
-            width = 380,
-            maxLines = 1
-        )
-        drawTextBlock(
-            canvas = canvas,
-            text = content.highlightFact,
-            paint = bodyPaint.apply { color = palette.textPrimary },
-            x = highlightRect.left + 34f,
-            y = highlightRect.top + 88f,
-            width = 900,
-            maxLines = 5
-        )
+        drawTextBlock(canvas, "Что запомнилось", labelPaint, highlightRect.left + 34f, highlightRect.top + 30f, 380, 1)
+        drawTextBlock(canvas, content.highlightFact, bodyPaint.apply { color = palette.textPrimary }, highlightRect.left + 34f, highlightRect.top + 88f, 900, 5)
         bodyPaint.color = palette.textSecondary
 
-        drawTextBlock(
-            canvas = canvas,
-            text = content.footerLabel,
-            paint = bodyPaint,
-            x = 116f,
-            y = highlightRect.bottom + 44f,
-            width = 900,
-            maxLines = 1
-        )
-        drawTextBlock(
-            canvas = canvas,
-            text = "Спокойная учебная викторина о регионе",
-            paint = bodyPaint.apply { textSize = 32f },
-            x = 116f,
-            y = highlightRect.bottom + 94f,
-            width = 900,
-            maxLines = 1
-        )
+        drawTextBlock(canvas, content.footerLabel, bodyPaint, 116f, highlightRect.bottom + 44f, 900, 1)
+        drawTextBlock(canvas, "Спокойная учебная викторина о регионе", bodyPaint.apply { textSize = 32f }, 116f, highlightRect.bottom + 94f, 900, 1)
 
         return bitmap
     }
@@ -435,24 +335,8 @@ object ResultShareManager {
             30f,
             Paint(Paint.ANTI_ALIAS_FLAG).apply { color = palette.surfaceAlt }
         )
-        drawTextBlock(
-            canvas = canvas,
-            text = label,
-            paint = labelPaint,
-            x = rect.left + 28f,
-            y = rect.top + 26f,
-            width = (rect.width() - 56f).toInt(),
-            maxLines = 1
-        )
-        drawTextBlock(
-            canvas = canvas,
-            text = value,
-            paint = valuePaint,
-            x = rect.left + 28f,
-            y = rect.top + 74f,
-            width = (rect.width() - 56f).toInt(),
-            maxLines = 2
-        )
+        drawTextBlock(canvas, label, labelPaint, rect.left + 28f, rect.top + 26f, (rect.width() - 56f).toInt(), 1)
+        drawTextBlock(canvas, value, valuePaint, rect.left + 28f, rect.top + 74f, (rect.width() - 56f).toInt(), 2)
     }
 
     private fun drawAmbientGlow(

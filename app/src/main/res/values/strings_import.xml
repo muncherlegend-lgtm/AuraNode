@@ -32,7 +32,7 @@
     <string name="import_generate_offline">Использовать offline draft</string>
     <string name="import_status_title">Статус генерации</string>
 
-    <string name="onboarding_title">Настрой старт AuraNode</string>
+    <string name="onboarding_title">Настрой старт «Маршрут Алтая»</string>
     <string name="onboarding_body">Выбери основной домашний сценарий, режим ответа и поведение AI. Официальная алтайская экспедиция уже предвыбрана как безопасный конкурсный старт.</string>
     <string name="onboarding_ai_toggle">Включить cloud AI как бонус</string>
     <string name="onboarding_continue">Продолжить</string>

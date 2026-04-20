@@ -646,7 +646,10 @@ class QuizViewModel @Inject constructor(
         }
         if (!canSelectMode(resolvedMode, currentState)) return
 
-        val settings = normalizeSettings(currentState.quizSettings)
+        val settings = effectiveSettingsForMode(
+            normalizeSettings(currentState.quizSettings),
+            resolvedMode
+        )
         val questions = prepareQuestions(
             questions = quizRepository.getQuestionsByDifficulty(
                 difficulty = difficulty,
@@ -822,10 +825,7 @@ class QuizViewModel @Inject constructor(
         settings: QuizSettings,
         mode: QuizMode
     ): List<Question> {
-        val limitedQuestions = when (mode) {
-            QuizMode.LEGEND -> questions
-            else -> questions.take(settings.questionsPerDifficulty)
-        }
+        val limitedQuestions = questions.take(questionLimitForMode(settings, mode))
 
         val shuffledQuestions = if (settings.shuffleQuestions) {
             limitedQuestions.shuffled()
@@ -906,6 +906,30 @@ class QuizViewModel @Inject constructor(
         homeContentPreference = HomeContentPreference.OFFICIAL_FIRST,
         hasCompletedOnboarding = true
     )
+
+    private fun effectiveSettingsForMode(
+        settings: QuizSettings,
+        mode: QuizMode
+    ): QuizSettings = when (mode) {
+        QuizMode.CLASSIC -> settings
+        QuizMode.SPRINT -> settings.copy(
+            timerSeconds = settings.timerSeconds.coerceAtMost(12),
+            questionsPerDifficulty = (settings.questionsPerDifficulty - 1).coerceIn(3, 6)
+        )
+        QuizMode.LEGEND -> settings.copy(
+            timerSeconds = (settings.timerSeconds + 4).coerceIn(12, 45),
+            questionsPerDifficulty = (settings.questionsPerDifficulty + 2).coerceIn(5, 10)
+        )
+    }
+
+    private fun questionLimitForMode(
+        settings: QuizSettings,
+        mode: QuizMode
+    ): Int = when (mode) {
+        QuizMode.CLASSIC -> settings.questionsPerDifficulty
+        QuizMode.SPRINT -> settings.questionsPerDifficulty.coerceIn(3, 6)
+        QuizMode.LEGEND -> settings.questionsPerDifficulty.coerceIn(5, 10)
+    }
 
     private fun updateQuizSettings(transform: (QuizSettings) -> QuizSettings) {
         val updatedSettings = normalizeSettings(transform(_uiState.value.quizSettings))

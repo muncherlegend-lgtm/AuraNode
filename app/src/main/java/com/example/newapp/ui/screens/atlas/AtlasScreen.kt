@@ -32,8 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -269,12 +269,20 @@ private fun AtlasNodeDetails(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            text = if (unlocked) node.description else "${node.subtitle}. Точка откроется после правильных ответов в официальном наборе.",
+            text = if (unlocked) {
+                node.description
+            } else {
+                "${node.subtitle}. Точка откроется после правильных ответов в официальном наборе."
+            },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = if (unlocked) node.highlightFact else "Подсказка: продолжайте викторину, чтобы открыть эту точку.",
+            text = if (unlocked) {
+                node.highlightFact
+            } else {
+                "Подсказка: продолжайте викторину, чтобы открыть эту точку."
+            },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -343,26 +351,15 @@ private fun AtlasProgress(
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        OutlinedProgressButton(
-                            text = "Показать на карте",
-                            onClick = onOpenLatest
-                        )
+                        androidx.compose.material3.OutlinedButton(
+                            onClick = onOpenLatest,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = "Показать на карте")
+                        }
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun OutlinedProgressButton(
-    text: String,
-    onClick: () -> Unit
-) {
-    androidx.compose.material3.OutlinedButton(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(text = text)
     }
 }

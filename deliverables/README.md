@@ -1,4 +1,4 @@
-# AuraNode Deliverables
+# Маршрут Алтая Deliverables
 
 - `app-release.apk` - release build for contest submission
 - `app-debug.apk` - debug build for local verification

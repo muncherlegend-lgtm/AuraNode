@@ -39,6 +39,7 @@ import com.example.newapp.ui.AuraNodeTestTags
 import com.example.newapp.ui.components.AuraFactChip
 import com.example.newapp.ui.components.AuraNodeSurfaceCard
 import com.example.newapp.ui.components.QuizPackCard
+import com.example.newapp.ui.copy.uiLabel
 import com.example.newapp.ui.quiz.QuizUiState
 
 @Composable
@@ -86,9 +87,7 @@ fun MaterialsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                AuraNodeSurfaceCard(
-                    modifier = Modifier.statusBarsPadding()
-                ) {
+                AuraNodeSurfaceCard(modifier = Modifier.statusBarsPadding()) {
                     Column(
                         modifier = Modifier.padding(horizontal = 18.dp, vertical = 18.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -140,7 +139,7 @@ fun MaterialsScreen(
                         }
 
                         AuraFactChip(
-                            text = "Поддерживаются TXT, MD, PDF, DOCX",
+                            text = "Поддерживаются TXT, MD, PDF и DOCX",
                             compact = true
                         )
                     }
@@ -184,7 +183,7 @@ fun MaterialsScreen(
                             FilterChip(
                                 selected = selectedDifficulty == difficulty,
                                 onClick = { onDifficultySelected(difficulty) },
-                                label = { Text(text = difficulty.label()) }
+                                label = { Text(text = difficulty.uiLabel()) }
                             )
                         }
                     }
@@ -415,7 +414,7 @@ private fun DraftQuestionCard(
                     FilterChip(
                         selected = question.difficulty == difficulty,
                         onClick = { onDifficultyChanged(difficulty) },
-                        label = { Text(text = difficulty.label()) }
+                        label = { Text(text = difficulty.uiLabel()) }
                     )
                 }
             }
@@ -434,10 +433,4 @@ private fun DraftQuestionCard(
             }
         }
     }
-}
-
-private fun Difficulty.label(): String = when (this) {
-    Difficulty.CADET -> "Кадет"
-    Difficulty.ENGINEER -> "Инженер"
-    Difficulty.COSMONAUT -> "Космонавт"
 }

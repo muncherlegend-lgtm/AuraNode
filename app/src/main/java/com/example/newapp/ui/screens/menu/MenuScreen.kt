@@ -1,5 +1,6 @@
 package com.example.newapp.ui.screens.menu
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,6 +40,7 @@ import com.example.newapp.ui.components.AuraFactChip
 import com.example.newapp.ui.components.AuraNodeSurfaceCard
 import com.example.newapp.ui.components.DifficultyRouteCard
 import com.example.newapp.ui.components.QuizModeCard
+import com.example.newapp.ui.copy.APP_NAME
 import com.example.newapp.ui.quiz.QuizUiState
 
 @Composable
@@ -74,9 +76,7 @@ fun MenuScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                AuraNodeSurfaceCard(
-                    modifier = Modifier.statusBarsPadding()
-                ) {
+                AuraNodeSurfaceCard(modifier = Modifier.statusBarsPadding()) {
                     Column(
                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -91,7 +91,7 @@ fun MenuScreen(
                         )
 
                         Text(
-                            text = "AuraNode",
+                            text = APP_NAME,
                             style = MaterialTheme.typography.displaySmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -99,7 +99,7 @@ fun MenuScreen(
 
                         Text(
                             text = if (uiState.isOfficialPackSelected) {
-                                "Спокойная учебная викторина о регионе: выберите режим, уровень и начните прохождение без лишних экранов."
+                                "Спокойная конкурсная викторина о регионе. Выберите режим, уровень и начните прохождение без лишних экранов."
                             } else {
                                 "Выбран пользовательский набор. Его можно запустить отсюда или открыть раздел «Материалы» для редактирования."
                             },
@@ -149,7 +149,7 @@ fun MenuScreen(
 
                         SectionBlock(
                             title = "Уровень",
-                            body = "Три уровня сложности с разным темпом восприятия материала."
+                            body = "Три уровня сложности с разной глубиной и плотностью материала."
                         ) {
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 items(Difficulty.entries) { difficulty ->
@@ -168,7 +168,7 @@ fun MenuScreen(
 
                         SectionBlock(
                             title = "Режим",
-                            body = "Основной маршрут всегда остаётся главным сценарием, а дополнительные режимы подаются спокойнее."
+                            body = "Режимы теперь различаются по темпу, длине и системе очков."
                         ) {
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 items(QuizMode.entries) { mode ->
@@ -183,7 +183,7 @@ fun MenuScreen(
                                         enabled = enabled,
                                         onClick = { if (enabled) onModeSelected(mode) },
                                         modifier = Modifier
-                                            .width(260.dp)
+                                            .width(268.dp)
                                             .testTag(AuraNodeTestTags.modeTag(mode))
                                     )
                                 }
@@ -232,7 +232,7 @@ fun MenuScreen(
 
                     SecondaryActionCard(
                         title = "Настройки",
-                        body = "Таймер, количество вопросов, анимации, звук и локальные данные приложения.",
+                        body = "Таймер, количество вопросов, анимации, звук, вибро и локальные данные приложения.",
                         icon = {
                             Icon(
                                 imageVector = Icons.Outlined.Settings,
@@ -293,7 +293,9 @@ private fun SecondaryActionCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    AuraNodeSurfaceCard(modifier = modifier) {
+    AuraNodeSurfaceCard(
+        modifier = modifier.clickable(onClick = onClick)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

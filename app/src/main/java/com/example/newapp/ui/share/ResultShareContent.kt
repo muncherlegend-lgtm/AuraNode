@@ -6,6 +6,7 @@ import com.example.newapp.data.model.QuizMode
 import com.example.newapp.data.model.QuizPackType
 import com.example.newapp.data.model.RunSummary
 import com.example.newapp.data.model.ThemePreset
+import com.example.newapp.ui.copy.APP_NAME
 import kotlin.math.roundToInt
 
 data class ResultShareContent(
@@ -42,7 +43,7 @@ fun buildResultShareContent(
         verdictLabel = runSummary.medalTier.shareVerdictLabel(accuracyPercent),
         scoreLabel = "${runSummary.score} / ${runSummary.maxScore}",
         accuracyLabel = "Точность $accuracyPercent%",
-        correctAnswersLabel = "${runSummary.correctAnswers} из ${runSummary.totalQuestions} верно",
+        correctAnswersLabel = "${runSummary.correctAnswers} из ${runSummary.totalQuestions}",
         streakLabel = "Серия ${runSummary.longestStreak}",
         modeLabel = runSummary.mode.shareLabel(),
         difficultyLabel = runSummary.difficulty.shareLabel(),
@@ -50,18 +51,18 @@ fun buildResultShareContent(
         footerLabel = when {
             runSummary.sourceFileName.isNotBlank() -> "Материал: ${runSummary.sourceFileName}"
             themePreset != null -> "Тема: ${themePreset.title}"
-            else -> "Локальный результат AuraNode"
+            else -> "Локальный результат «$APP_NAME»"
         }
     )
 }
 
 fun ResultShareContent.toShareText(): String = buildString {
-    appendLine("AuraNode")
+    appendLine(APP_NAME)
     appendLine(packCategory)
     appendLine(packTitle)
     appendLine("Счёт: $scoreLabel")
     appendLine(accuracyLabel)
-    appendLine(correctAnswersLabel)
+    appendLine("Верно: $correctAnswersLabel")
     appendLine("Режим: $modeLabel")
     appendLine("Уровень: $difficultyLabel")
     appendLine("Итог: $verdictLabel")
@@ -73,7 +74,7 @@ fun ResultShareContent.toShareText(): String = buildString {
 fun QuizMode.shareLabel(): String = when (this) {
     QuizMode.CLASSIC -> "Основной"
     QuizMode.SPRINT -> "Быстрый"
-    QuizMode.LEGEND -> "Углублённый"
+    QuizMode.LEGEND -> "Углубленный"
 }
 
 fun Difficulty.shareLabel(): String = when (this) {

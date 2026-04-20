@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.example.newapp.data.model.MedalTier
 import com.example.newapp.data.model.RunSummary
 import com.example.newapp.data.model.ThemePreset
+import com.example.newapp.ui.copy.APP_NAME
 import com.example.newapp.ui.share.buildResultShareContent
 import com.example.newapp.ui.theme.AuraNodeCorners
 
@@ -65,30 +65,24 @@ fun ResultShareCard(
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Transparent)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(top = 18.dp, end = 18.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
-                            shape = CircleShape
-                        )
-                        .padding(56.dp)
-                )
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(start = 12.dp, bottom = 16.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
-                            shape = CircleShape
-                        )
-                        .padding(46.dp)
-                )
-            }
+                    .align(Alignment.TopEnd)
+                    .padding(top = 18.dp, end = 18.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
+                        shape = CircleShape
+                    )
+                    .padding(56.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 12.dp, bottom = 16.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                        shape = CircleShape
+                    )
+                    .padding(46.dp)
+            )
 
             Column(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
@@ -104,7 +98,7 @@ fun ResultShareCard(
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text(
-                            text = "AURANODE",
+                            text = APP_NAME,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary

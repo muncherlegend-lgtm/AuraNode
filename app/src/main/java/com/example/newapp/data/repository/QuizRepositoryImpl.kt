@@ -60,7 +60,7 @@ class QuizRepositoryImpl @Inject constructor(
             QuizMode.LEGEND -> {
                 val legendary = questions.filter { it.isLegendary }
                 val remaining = questions.filterNot { it.isLegendary }.sortedByDescending { it.difficultyWeight }
-                (legendary + remaining).distinctBy { it.id }.take(3)
+                (legendary + remaining).distinctBy { it.id }
             }
         }
     }

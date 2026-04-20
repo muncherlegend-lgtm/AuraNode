@@ -1,6 +1,6 @@
-# AuraNode
+# Маршрут Алтая
 
-AuraNode is an Android quiz app about Altai Krai and Barnaul, built with Kotlin and Jetpack Compose for a mobile app competition.
+«Маршрут Алтая» — это Android-викторина об Алтайском крае и Барнауле, сделанная на Kotlin и Jetpack Compose для мобильного конкурса.
 
 ## What The App Does
 

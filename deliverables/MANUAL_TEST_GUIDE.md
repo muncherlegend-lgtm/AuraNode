@@ -1,4 +1,4 @@
-# AuraNode Manual Test Guide
+# Маршрут Алтая Manual Test Guide
 
 ## 1. Files And Paths
 

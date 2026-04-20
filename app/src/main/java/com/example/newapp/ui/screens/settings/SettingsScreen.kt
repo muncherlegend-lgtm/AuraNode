@@ -63,9 +63,7 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                AuraNodeSurfaceCard(
-                    modifier = Modifier.statusBarsPadding()
-                ) {
+                AuraNodeSurfaceCard(modifier = Modifier.statusBarsPadding()) {
                     Column(
                         modifier = Modifier.padding(horizontal = 18.dp, vertical = 18.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -146,7 +144,7 @@ fun SettingsScreen(
             }
 
             item {
-                SettingsSection(title = "Интерфейс") {
+                SettingsSection(title = "Оформление") {
                     ToggleRow(
                         title = "Компактный интерфейс",
                         body = "Уменьшает отступы и помогает на небольших экранах.",
@@ -161,13 +159,13 @@ fun SettingsScreen(
                     )
                     ToggleRow(
                         title = "Тактильный отклик",
-                        body = "Короткая вибрация на действиях и ответах.",
+                        body = "Короткая вибрация на ответы и действия.",
                         checked = settings.hapticsEnabled,
                         onCheckedChange = onHapticsChanged
                     )
                     ToggleRow(
                         title = "Звук",
-                        body = "Локальные звуковые подтверждения интерфейса.",
+                        body = "Локальные звуковые подтверждения правильного и неверного ответа.",
                         checked = settings.soundEnabled,
                         onCheckedChange = onSoundChanged
                     )
@@ -237,30 +235,31 @@ private fun ToggleRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = body,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = body,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
     }
 }
 

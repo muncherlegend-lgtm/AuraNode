@@ -1,5 +1,12 @@
 package com.example.newapp.ui.screens.quiz
 
+import android.content.Context
+import android.media.AudioManager
+import android.media.ToneGenerator
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,19 +32,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.newapp.data.model.Difficulty
 import com.example.newapp.data.model.QuizMode
 import com.example.newapp.ui.AuraNodeTestTags
-import com.example.newapp.ui.quiz.AnswerFeedbackType
-import com.example.newapp.ui.quiz.QuizUiState
 import com.example.newapp.ui.components.AuraFactChip
 import com.example.newapp.ui.components.AuraNodeSurfaceCard
+import com.example.newapp.ui.copy.uiLabel
+import com.example.newapp.ui.quiz.AnswerFeedbackType
+import com.example.newapp.ui.quiz.QuizUiState
 
 @Composable
 fun QuizScreen(
@@ -47,6 +59,22 @@ fun QuizScreen(
     modifier: Modifier = Modifier
 ) {
     val currentQuestion = uiState.currentQuestion
+    val context = LocalContext.current
+    val feedbackPlayer = remember { AnswerFeedbackPlayer(context) }
+
+    DisposableEffect(Unit) {
+        onDispose { feedbackPlayer.release() }
+    }
+
+    LaunchedEffect(uiState.currentQuestionIndex, uiState.answerFeedbackType) {
+        val feedbackType = uiState.answerFeedbackType ?: return@LaunchedEffect
+        feedbackPlayer.play(
+            feedbackType = feedbackType,
+            soundEnabled = uiState.quizSettings.soundEnabled,
+            hapticsEnabled = uiState.quizSettings.hapticsEnabled
+        )
+    }
+
     if (currentQuestion == null) {
         Scaffold(
             modifier = modifier.testTag(AuraNodeTestTags.QUIZ_SCREEN),
@@ -82,9 +110,7 @@ fun QuizScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                AuraNodeSurfaceCard(
-                    modifier = Modifier.statusBarsPadding()
-                ) {
+                AuraNodeSurfaceCard(modifier = Modifier.statusBarsPadding()) {
                     Column(
                         modifier = Modifier.padding(horizontal = 18.dp, vertical = 18.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -113,7 +139,7 @@ fun QuizScreen(
                                 )
                             }
                             AuraFactChip(
-                                text = difficultyLabel(uiState.selectedDifficulty ?: Difficulty.CADET),
+                                text = (uiState.selectedDifficulty ?: Difficulty.CADET).uiLabel(),
                                 compact = true
                             )
                         }
@@ -301,16 +327,67 @@ private fun buildFeedbackText(uiState: QuizUiState): String {
     }
 }
 
-private fun difficultyLabel(difficulty: Difficulty): String = when (difficulty) {
-    Difficulty.CADET -> "Кадет"
-    Difficulty.ENGINEER -> "Инженер"
-    Difficulty.COSMONAUT -> "Космонавт"
-}
-
 private fun modeLabel(mode: QuizMode): String = when (mode) {
     QuizMode.CLASSIC -> "Основной"
     QuizMode.SPRINT -> "Быстрый"
-    QuizMode.LEGEND -> "Углублённый"
+    QuizMode.LEGEND -> "Углубленный"
+}
+
+private class AnswerFeedbackPlayer(
+    private val context: Context
+) {
+    private val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 80)
+
+    fun play(
+        feedbackType: AnswerFeedbackType,
+        soundEnabled: Boolean,
+        hapticsEnabled: Boolean
+    ) {
+        if (hapticsEnabled) {
+            vibrate(feedbackType)
+        }
+        if (soundEnabled) {
+            when (feedbackType) {
+                AnswerFeedbackType.CORRECT -> toneGenerator.startTone(ToneGenerator.TONE_PROP_ACK, 120)
+                AnswerFeedbackType.INCORRECT -> toneGenerator.startTone(ToneGenerator.TONE_PROP_NACK, 160)
+                AnswerFeedbackType.TIMEOUT -> toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 180)
+            }
+        }
+    }
+
+    fun release() {
+        toneGenerator.release()
+    }
+
+    private fun vibrate(feedbackType: AnswerFeedbackType) {
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val manager = context.getSystemService(VibratorManager::class.java)
+            manager?.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        } ?: return
+
+        if (!vibrator.hasVibrator()) return
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val effect = when (feedbackType) {
+                AnswerFeedbackType.CORRECT -> VibrationEffect.createOneShot(40L, VibrationEffect.DEFAULT_AMPLITUDE)
+                AnswerFeedbackType.INCORRECT -> VibrationEffect.createWaveform(longArrayOf(0L, 35L, 40L, 45L), -1)
+                AnswerFeedbackType.TIMEOUT -> VibrationEffect.createOneShot(70L, VibrationEffect.DEFAULT_AMPLITUDE)
+            }
+            vibrator.vibrate(effect)
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(
+                when (feedbackType) {
+                    AnswerFeedbackType.CORRECT -> 40L
+                    AnswerFeedbackType.INCORRECT -> 90L
+                    AnswerFeedbackType.TIMEOUT -> 70L
+                }
+            )
+        }
+    }
 }
 
 private enum class OptionVisualState {

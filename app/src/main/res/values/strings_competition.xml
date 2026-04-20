@@ -38,7 +38,7 @@
     <string name="atlas_category_travel">Маршрут</string>
     <string name="atlas_category_industry">Индустрия</string>
 
-    <string name="share_card_title">AuraNode Expedition</string>
+    <string name="share_card_title">Маршрут Алтая</string>
     <string name="share_card_accuracy_format">Точность %1$d%% · %2$s</string>
     <string name="share_card_streak_format">Точность %1$d%% · серия %2$d</string>
     <string name="share_card_theme_format">Тема: %1$s</string>

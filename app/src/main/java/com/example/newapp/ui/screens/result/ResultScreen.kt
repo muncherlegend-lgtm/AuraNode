@@ -49,15 +49,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.newapp.data.model.RunSummary
 import com.example.newapp.data.model.Difficulty
 import com.example.newapp.data.model.QuizPackType
-import com.example.newapp.data.model.RunSummary
 import com.example.newapp.data.model.ThemePreset
 import com.example.newapp.ui.AuraNodeTestTags
 import com.example.newapp.ui.components.AuraFactChip
 import com.example.newapp.ui.components.AuraNodeSurfaceCard
 import com.example.newapp.ui.components.ResultMetricCard
 import com.example.newapp.ui.components.ResultShareCard
+import com.example.newapp.ui.copy.APP_NAME
+import com.example.newapp.ui.copy.uiLabel
 import com.example.newapp.ui.quiz.QuizUiState
 import com.example.newapp.ui.share.ResultShareManager
 import com.example.newapp.ui.share.shareLabel
@@ -104,7 +106,7 @@ fun ResultScreen(
                     themePreset = uiState.selectedTheme,
                     highlightFact = highlightFact
                 ).onSuccess {
-                    context.toast("PNG сохранён в изображения AuraNode.")
+                    context.toast("PNG сохранён в изображения «$APP_NAME».")
                 }.onFailure {
                     context.toast("Не удалось сохранить PNG.")
                 }
@@ -137,9 +139,7 @@ fun ResultScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                AuraNodeSurfaceCard(
-                    modifier = Modifier.statusBarsPadding()
-                ) {
+                AuraNodeSurfaceCard(modifier = Modifier.statusBarsPadding()) {
                     Column(
                         modifier = Modifier.padding(horizontal = 18.dp, vertical = 18.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -152,9 +152,9 @@ fun ResultScreen(
                         )
                         Text(
                             text = if (isOfficialPack) {
-                                "Основной маршрут по Алтайскому краю завершён. Можно открыть карту, поделиться карточкой результата или ещё раз пройти этот уровень."
+                                "Основной маршрут завершён. Можно открыть карту, поделиться карточкой результата или пройти этот уровень ещё раз."
                             } else {
-                                "Пользовательский набор завершён. Его можно сохранить в виде карточки, отправить в мессенджер или снова пройти материал."
+                                "Пользовательский набор завершён. Его можно сохранить в виде карточки, отправить в мессенджер или пройти материал повторно."
                             },
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -166,7 +166,7 @@ fun ResultScreen(
                             )
                             runSummary?.difficulty?.let {
                                 AuraFactChip(
-                                    text = difficultyLabel(it),
+                                    text = it.uiLabel(),
                                     accent = MaterialTheme.colorScheme.secondary,
                                     compact = true
                                 )
@@ -237,7 +237,7 @@ fun ResultScreen(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = runSummary.packTitle.ifBlank { "AuraNode" },
+                                text = runSummary.packTitle.ifBlank { APP_NAME },
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
@@ -356,7 +356,7 @@ private fun ResultSharePreviewDialog(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "Карточка уже подготовлена для мессенджеров и публикаций. Можно сразу отправить изображение, сохранить PNG или скопировать текстовую версию.",
+                            text = "Карточка уже подготовлена для мессенджеров и публикаций. Можно отправить изображение, сохранить PNG или скопировать текстовую версию.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -461,12 +461,6 @@ private fun resultHeadline(runSummary: RunSummary?): String = when {
     runSummary.accuracyRatio >= 1f -> "Безошибочное прохождение"
     runSummary.accuracyRatio >= 0.75f -> "Сильный результат"
     else -> "Маршрут завершён"
-}
-
-private fun difficultyLabel(difficulty: Difficulty): String = when (difficulty) {
-    Difficulty.CADET -> "Кадет"
-    Difficulty.ENGINEER -> "Инженер"
-    Difficulty.COSMONAUT -> "Космонавт"
 }
 
 private fun Context.toast(message: String) {
